@@ -5,3 +5,6 @@ name here please open a pull request.
 
 D: ARM Versatile Platform Baseboard (versatilepb)
 W: https://github.com/jkovacic/FreeRTOS-GCC-ARM926ejs
+
+D: BeagleBone Black
+W: https://github.com/henfos/BBBFreeRTOS

@@ -1,0 +1,10 @@
+setenv sel4bin rtosdemo-a.bin ; setenv loadaddr 0x82000000 ; fatload mmc 0 ${loadaddr} ${sel4bin} ; go ${loadaddr}
+setenv sel4bin led-blink.bin ; setenv loadaddr 0x82000000 ; fatload mmc 0 ${loadaddr} ${sel4bin} ; go ${loadaddr}
+setenv sel4bin hello-world.bin ; setenv loadaddr 0x82000000 ; fatload mmc 0 ${loadaddr} ${sel4bin} ; go ${loadaddr}
+setenv sel4bin native-led-blink.bin ; setenv loadaddr 0x82000000 ; fatload mmc 0 ${loadaddr} ${sel4bin} ; go ${loadaddr}
+setenv sel4bin native-hello-world.bin ; setenv loadaddr 0x82000000 ; fatload mmc 0 ${loadaddr} ${sel4bin} ; go ${loadaddr}
+setenv sel4bin native-newlib.bin ; setenv loadaddr 0x82000000 ; fatload mmc 0 ${loadaddr} ${sel4bin} ; go ${loadaddr}
+setenv bin gpio.bin ; setenv loadaddr 0x80000000 ; fatload mmc 0 ${loadaddr} ${bin} ; go ${loadaddr}
+setenv bin gpio-log.bin ; setenv loadaddr 0x80000000 ; fatload mmc 0 ${loadaddr} ${bin} ; go ${loadaddr}
+setenv bin spl.boot ; setenv loadaddr 0x80000000 ; fatload mmc 0 ${loadaddr} ${bin} ; go ${loadaddr}
+
