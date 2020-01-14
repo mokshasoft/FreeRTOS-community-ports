@@ -55,7 +55,7 @@ PORT_COMP_TARG = GCC/ARM926EJ-S/
 OBJDIR = obj/
 
 # FreeRTOS source base directory
-FREERTOS_SRC = FreeRTOS/Source/
+FREERTOS_SRC = ../../FreeRTOS/Source/
 
 # Directory with memory management source files
 FREERTOS_MEMMANG_SRC = $(FREERTOS_SRC)portable/MemMang/
@@ -64,10 +64,10 @@ FREERTOS_MEMMANG_SRC = $(FREERTOS_SRC)portable/MemMang/
 FREERTOS_PORT_SRC = $(FREERTOS_SRC)portable/$(PORT_COMP_TARG)
 
 # Directory with HW drivers' source files
-DRIVERS_SRC = drivers/
+DRIVERS_SRC = ../../drivers/
 
 # Directory with demo specific source (and header) files
-APP_SRC = Demo/
+APP_SRC = ./
 
 
 # Object files to be linked into an application
