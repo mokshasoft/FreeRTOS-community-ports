@@ -48,14 +48,14 @@ CFLAGS = $(CPUFLAG) $(WFLAG)
 DEB_FLAG = -g -DDEBUG
 
 
-# Compiler/target path in FreeRTOS/Source/portable
+# Compiler/target path in Source/portable
 PORT_COMP_TARG = GCC/ARM926EJ-S/
 
 # Intermediate directory for all *.o and other files:
 OBJDIR = obj/
 
 # FreeRTOS source base directory
-FREERTOS_SRC = ../../FreeRTOS/Source/
+FREERTOS_SRC = ../../Source/
 
 # Directory with memory management source files
 FREERTOS_MEMMANG_SRC = $(FREERTOS_SRC)portable/MemMang/
@@ -64,7 +64,7 @@ FREERTOS_MEMMANG_SRC = $(FREERTOS_SRC)portable/MemMang/
 FREERTOS_PORT_SRC = $(FREERTOS_SRC)portable/$(PORT_COMP_TARG)
 
 # Directory with HW drivers' source files
-DRIVERS_SRC = ../../drivers/
+DRIVERS_SRC = $(FREERTOS_PORT_SRC)/drivers/
 
 # Directory with demo specific source (and header) files
 APP_SRC = ./
@@ -172,7 +172,7 @@ $(OBJDIR)stream_buffer.o : $(FREERTOS_SRC)stream_buffer.c
 	$(CC) $(CFLAG) $(CFLAGS) $(INC_FLAGS) $< $(OFLAG) $@
 
 
-# HW specific part, in FreeRTOS/Source/portable/$(PORT_COMP_TARGET)
+# HW specific part, in Source/portable/$(PORT_COMP_TARGET)
 
 $(OBJDIR)port.o : $(FREERTOS_PORT_SRC)port.c
 	$(CC) $(CFLAG) $(CFLAGS) $(INC_FLAGS) $(INC_FLAG_DRIVERS) $< $(OFLAG) $@
