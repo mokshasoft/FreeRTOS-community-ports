@@ -13,5 +13,6 @@ astyle \
     --pad-header \
     --indent=spaces=4 \
     --pad-oper \
+    --unpad-paren \
     ${SRC_DEMOS} \
     ${SRC_PORTS}
