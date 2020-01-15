@@ -67,8 +67,7 @@
  * among certain groups of registers. The gaps are filled by
  * Unused* "registers" and are treated as "should not be modified".
  */
-typedef struct _ARM926EJS_PIC_REGS
-{
+typedef struct _ARM926EJS_PIC_REGS {
     const uint32_t VICIRQSTATUS;      /* IRQ Status Register, read only */
     const uint32_t VICFIQSTATUS;      /* FIQ Status Register, read only */
     const uint32_t VICRAWINTR;        /* Raw Interrupt Status Register, read only */
@@ -110,8 +109,7 @@ typedef struct _ARM926EJS_PIC_REGS
  *
  * Note that some registers share their addresses. See #defines below.
  */
-typedef struct _ARM926EJS_SIC_REGS
-{
+typedef struct _ARM926EJS_SIC_REGS {
     const uint32_t SIC_STATUS;        /* Status of interrupt (after mask), read only */
     const uint32_t SIC_RAWSTAT;       /* Status of interrupt (before mask), read only */
     uint32_t SIC_ENABLE;              /* Interrupt mask; also SIC_ENSET */
@@ -140,7 +138,7 @@ typedef struct _ARM926EJS_SIC_REGS
 #define NR_INTERRUPTS          ( 32 )
 
 
-static volatile ARM926EJS_PIC_REGS* const pPicReg = (ARM926EJS_PIC_REGS*) (BSP_PIC_BASE_ADDRESS);
+static volatile ARM926EJS_PIC_REGS* const pPicReg = (ARM926EJS_PIC_REGS*)(BSP_PIC_BASE_ADDRESS);
 /* static volatile ARM926EJS_SIC_REGS* const pSicReg = (ARM926EJS_SIC_REGS*) (BSP_SIC_BASE_ADDRESS); */
 
 
@@ -151,8 +149,7 @@ static volatile ARM926EJS_PIC_REGS* const pPicReg = (ARM926EJS_PIC_REGS*) (BSP_P
  * does not serve any IRQ. In this case, the corresponding VICVECTCNTLn is
  * supposed to be set to 0 and its VICVECTADDRn should be set to __irq_dummyISR.
  */
-typedef struct _isrVectRecord
-{
+typedef struct _isrVectRecord {
     int8_t irq;                   /* IRQ handled by this record */
     pVectoredIsrPrototype isr;    /* address of the ISR */
     int8_t priority;              /* priority of this IRQ */
@@ -212,7 +209,7 @@ static void __irq_dummyISR(void)
      * An "empty" function.
      * As this is a test application, it emits a warning to the UART0.
      */
-     uart_print(0, "<WARNING, A DUMMY ISR ROUTINE!!!>\r\n");
+    uart_print(0, "<WARNING, A DUMMY ISR ROUTINE!!!>\r\n");
 }
 
 
@@ -231,13 +228,11 @@ static void __defaultVectorIsr(void)
      * The current implementation assumes that the first 16 entries are properly serviced
      * and also enabled in their respective VICVECTCNTLn registers.
      */
-    for ( cntr=NR_VECTORS; cntr<NR_INTERRUPTS; ++cntr )
-    {
-        if ( __irqVect[cntr].irq >= 0 &&
-             __irqVect[cntr].irq < NR_INTERRUPTS &&
-             0 != HWREG_READ_SINGLE_BIT(pPicReg->VICINTENABLE, __irqVect[cntr].irq ) )
-        {
-            ( *__irqVect[cntr].isr )();
+    for (cntr = NR_VECTORS; cntr < NR_INTERRUPTS; ++cntr) {
+        if (__irqVect[cntr].irq >= 0 &&
+                __irqVect[cntr].irq < NR_INTERRUPTS &&
+                0 != HWREG_READ_SINGLE_BIT(pPicReg->VICINTENABLE, __irqVect[cntr].irq)) {
+            (*__irqVect[cntr].isr)();
             break;  /* out of for cntr */
         }
     }  /* for cntr */
@@ -246,8 +241,7 @@ static void __defaultVectorIsr(void)
      * The current implementation executes one ISR per call of this function.
      * If no appropriate ISR can be found, execute a dummy ISR.
      */
-    if ( cntr >= NR_INTERRUPTS )
-    {
+    if (cntr >= NR_INTERRUPTS) {
         __irq_dummyISR();
     }
 }
@@ -319,15 +313,13 @@ void pic_init(void)
     pPicReg->VICDEFVECTADDR = (uint32_t) &__defaultVectorIsr;
 
     /* clear all vectored ISR addresses: */
-    for ( i=0; i<NR_INTERRUPTS; ++i )
-    {
+    for (i = 0; i < NR_INTERRUPTS; ++i) {
         /* clear its entry in the table */
         __irqVect[i].irq = -1;                 /* no IRQ assigned */
         __irqVect[i].isr = &__irq_dummyISR;    /* dummy ISR routine */
         __irqVect[i].priority = -1;            /* lowest priority */
 
-        if ( i<NR_VECTORS )
-        {
+        if (i < NR_VECTORS) {
             /* clear its control register */
             pPicReg->VICVECTCNTLn[i] = UL0;
             /* and clear its ISR address to a dummy function */
@@ -349,8 +341,7 @@ void pic_enableInterrupt(uint8_t irq)
 {
     /* TODO check for valid (unreserved) interrupt numbers? Applies also for other functions */
 
-    if ( irq < NR_INTERRUPTS )
-    {
+    if (irq < NR_INTERRUPTS) {
         /* See description of VICINTENABLE, page 3-7 of DDI0181: */
         HWREG_SET_SINGLE_BIT(pPicReg->VICINTENABLE, irq);
 
@@ -368,8 +359,7 @@ void pic_enableInterrupt(uint8_t irq)
  */
 void pic_disableInterrupt(uint8_t irq)
 {
-    if ( irq < NR_INTERRUPTS )
-    {
+    if (irq < NR_INTERRUPTS) {
         /*
          * VICINTENCLEAR is a write only register and any attempt of reading it
          * will result in a crash. For that reason, operators as |=, &=, etc.
@@ -411,7 +401,7 @@ int8_t pic_isInterruptEnabled(uint8_t irq)
 {
     /* See description of VICINTENCLEAR, page 3-7 of DDI0181: */
 
-    return ( irq<NR_INTERRUPTS && (0!=HWREG_READ_SINGLE_BIT(pPicReg->VICINTENABLE, irq)) );
+    return (irq < NR_INTERRUPTS && (0 != HWREG_READ_SINGLE_BIT(pPicReg->VICINTENABLE, irq)));
 }
 
 
@@ -433,7 +423,7 @@ int8_t pic_getInterruptType(uint8_t irq)
      * otherwise it is IRQ.
      */
 
-	return ( irq<NR_INTERRUPTS && 0==HWREG_READ_SINGLE_BIT(pPicReg->VICINTSELECT, irq) );
+    return (irq < NR_INTERRUPTS && 0 == HWREG_READ_SINGLE_BIT(pPicReg->VICINTSELECT, irq));
 }
 
 
@@ -447,8 +437,7 @@ int8_t pic_getInterruptType(uint8_t irq)
  */
 void pic_setInterruptType(uint8_t irq, int8_t toIrq)
 {
-    if (irq<NR_INTERRUPTS)
-    {
+    if (irq < NR_INTERRUPTS) {
 
         /*
          * Only the corresponding bit must be modified, all other bits must remain unmodified.
@@ -457,15 +446,12 @@ void pic_setInterruptType(uint8_t irq, int8_t toIrq)
          * The interrupt's type is set via VICINTSELECT. See description
          * of the register at page 3-7 of DDI0181.
          */
-        if ( 0 != toIrq )
-        {
+        if (0 != toIrq) {
             /* Set the corresponding bit to 0 by bitwise and'ing bitmask's zero complement */
-            HWREG_CLEAR_SINGLE_BIT( pPicReg->VICINTSELECT, irq );
-        }
-        else
-        {
+            HWREG_CLEAR_SINGLE_BIT(pPicReg->VICINTSELECT, irq);
+        } else {
             /* Set the corresponding bit to 1 by bitwise or'ing the bitmask */
-            HWREG_SET_SINGLE_BIT( pPicReg->VICINTSELECT, irq );
+            HWREG_SET_SINGLE_BIT(pPicReg->VICINTSELECT, irq);
         }
     }
 }
@@ -480,8 +466,7 @@ void pic_setInterruptType(uint8_t irq, int8_t toIrq)
  */
 void pic_setDefaultVectorAddr(pVectoredIsrPrototype addr)
 {
-    if ( NULL != addr )
-    {
+    if (NULL != addr) {
         pPicReg->VICDEFVECTADDR = (uint32_t) addr;
     }
 }
@@ -512,9 +497,9 @@ void pic_setDefaultVectorAddr(pVectoredIsrPrototype addr)
  * @return position of the IRQ handling entry within an internal table, a negative value if registration was unsuccessful
  */
 int8_t pic_registerIrq(
-                        uint8_t irq,
-                        pVectoredIsrPrototype addr,
-                        uint8_t priority )
+    uint8_t irq,
+    pVectoredIsrPrototype addr,
+    uint8_t priority)
 {
     const uint8_t prior = priority & PIC_MAX_PRIORITY;
     int8_t irqPos = -1;
@@ -522,8 +507,7 @@ int8_t pic_registerIrq(
     int8_t i;
 
     /* sanity check: */
-    if (irq>=NR_INTERRUPTS || NULL==addr )
-    {
+    if (irq >= NR_INTERRUPTS || NULL == addr) {
         return -1;
     }
 
@@ -535,42 +519,32 @@ int8_t pic_registerIrq(
      * will be moved one line up or down.
      */
 
-    for ( i=0; i<NR_INTERRUPTS; ++i )
-    {
-        if ( irqPos<0 && (__irqVect[i].irq<0 || __irqVect[i].irq==irq) )
-        {
+    for (i = 0; i < NR_INTERRUPTS; ++i) {
+        if (irqPos < 0 && (__irqVect[i].irq < 0 || __irqVect[i].irq == irq)) {
             irqPos = i;
         }
 
-        if ( prPos<0 && (__irqVect[i].priority<0 || __irqVect[i].priority<prior) )
-        {
+        if (prPos < 0 && (__irqVect[i].priority < 0 || __irqVect[i].priority < prior)) {
             prPos = i;
         }
     }  /* for i */
 
     /* just in case, should never occur */
-    if ( irqPos>=NR_INTERRUPTS || irqPos<0 || prPos<0 )
-    {
+    if (irqPos >= NR_INTERRUPTS || irqPos < 0 || prPos < 0) {
         return -1;
     }
 
     /* if prPos is less than irqPos, move all intermediate entries one line down */
-    if ( irqPos > prPos )
-    {
-        for ( i=irqPos; i>prPos; --i )
-        {
-            __irqVect[i] = __irqVect[i-1];
+    if (irqPos > prPos) {
+        for (i = irqPos; i > prPos; --i) {
+            __irqVect[i] = __irqVect[i - 1];
 
             /* for i<16 also update PIC's vector address and control registers */
-            if ( i<NR_VECTORS )
-            {
-                if ( __irqVect[i].irq >= 0 )
-                {
+            if (i < NR_VECTORS) {
+                if (__irqVect[i].irq >= 0) {
                     pPicReg->VICVECTCNTLn[i] = __irqVect[i].irq | BM_VECT_ENABLE_BIT;
                     pPicReg->VICVECTADDRn[i] = (uint32_t) __irqVect[i].isr;
-                }
-                else
-                {
+                } else {
                     /* if i^th line is "empty", clear the appropriate vector registers */
                     pPicReg->VICVECTCNTLn[i] = UL0;
                     pPicReg->VICVECTADDRn[i] = (uint32_t) &__irq_dummyISR;
@@ -580,25 +554,19 @@ int8_t pic_registerIrq(
     }  /* if irqPos > prPos */
 
     /* if prPos is greater than irqPos, move all intermediate entries one line up... */
-    if ( prPos > irqPos )
-    {
+    if (prPos > irqPos) {
         /* however this does not include the entry at prPos, whose priority is less than prior!!! */
         --prPos;
 
-        for ( i=irqPos; i<prPos; ++i )
-        {
-            __irqVect[i] = __irqVect[i+1];
+        for (i = irqPos; i < prPos; ++i) {
+            __irqVect[i] = __irqVect[i + 1];
 
             /* for i<16 also update PIC's vector address and control registers */
-            if ( i<NR_VECTORS )
-            {
-                if ( __irqVect[i].irq >= 0 )
-                {
+            if (i < NR_VECTORS) {
+                if (__irqVect[i].irq >= 0) {
                     pPicReg->VICVECTCNTLn[i] = __irqVect[i].irq | BM_VECT_ENABLE_BIT;
                     pPicReg->VICVECTADDRn[i] = (uint32_t) __irqVect[i].isr;
-                }
-                else
-                {
+                } else {
                     /* if i^th line is "empty", clear the appropriate vector registers */
                     pPicReg->VICVECTCNTLn[i] = UL0;
                     pPicReg->VICVECTADDRn[i] = (uint32_t) &__irq_dummyISR;
@@ -613,8 +581,7 @@ int8_t pic_registerIrq(
     __irqVect[prPos].priority = prior;
 
     /* if prPos<16 also update the appropriate vector registers */
-    if ( prPos < NR_VECTORS )
-    {
+    if (prPos < NR_VECTORS) {
         pPicReg->VICVECTCNTLn[prPos] = irq | BM_VECT_ENABLE_BIT;
         pPicReg->VICVECTADDRn[prPos] = (uint32_t) addr;
     }
@@ -638,24 +605,20 @@ void pic_unregisterIrq(uint8_t irq)
     uint8_t pos;
 
     /* sanity check */
-    if (irq>=NR_INTERRUPTS)
-    {
+    if (irq >= NR_INTERRUPTS) {
         return;
     }
 
 
     /* Find the 'irq' in the priority table: */
-    for ( pos=0; pos<NR_INTERRUPTS; ++pos )
-    {
-        if ( __irqVect[pos].irq == irq )
-        {
+    for (pos = 0; pos < NR_INTERRUPTS; ++pos) {
+        if (__irqVect[pos].irq == irq) {
             break; /* out of for pos */
         }
     }
 
     /* Nothing to do if IRQ has not been found: */
-    if ( pos>=NR_INTERRUPTS )
-    {
+    if (pos >= NR_INTERRUPTS) {
         return;
     }
 
@@ -663,20 +626,15 @@ void pic_unregisterIrq(uint8_t irq)
      * Shift all entries past 'pos' (including invalid ones) one line up.
      * This will override the entry at 'pos'.
      */
-    for ( ; pos<NR_INTERRUPTS-1; ++pos )
-    {
-        __irqVect[pos] = __irqVect[pos+1];
+    for (; pos < NR_INTERRUPTS - 1; ++pos) {
+        __irqVect[pos] = __irqVect[pos + 1];
 
-        if ( pos<NR_VECTORS )
-        {
+        if (pos < NR_VECTORS) {
             /* for pos<16 also update PIC's vector address and control registers */
-            if ( __irqVect[pos].irq >= 0 )
-            {
+            if (__irqVect[pos].irq >= 0) {
                 pPicReg->VICVECTCNTLn[pos] = __irqVect[pos].irq | BM_VECT_ENABLE_BIT;
                 pPicReg->VICVECTADDRn[pos] = (uint32_t) __irqVect[pos].isr;
-            }
-            else
-            {
+            } else {
                 /* if pos^th line is "empty", clear the appropriate vector registers */
                 pPicReg->VICVECTCNTLn[pos] = UL0;
                 pPicReg->VICVECTADDRn[pos] = (uint32_t) &__irq_dummyISR;
@@ -685,9 +643,9 @@ void pic_unregisterIrq(uint8_t irq)
     }
 
     /* And "clear" the last entry to "default" values (see also pic_init()): */
-    __irqVect[NR_INTERRUPTS-1].irq = -1;               /* no IRQ assigned */
-    __irqVect[NR_INTERRUPTS-1].isr = &__irq_dummyISR;  /* dummy ISR routine */
-    __irqVect[NR_INTERRUPTS-1].priority = -1;          /* lowest priority */
+    __irqVect[NR_INTERRUPTS - 1].irq = -1;             /* no IRQ assigned */
+    __irqVect[NR_INTERRUPTS - 1].isr = &__irq_dummyISR; /* dummy ISR routine */
+    __irqVect[NR_INTERRUPTS - 1].priority = -1;        /* lowest priority */
 }
 
 
@@ -700,15 +658,13 @@ void pic_unregisterAllIrqs(void)
     uint8_t i;
 
     /* Clear all entries in the priority table */
-    for ( i=0; i<NR_VECTORS; ++i )
-    {
+    for (i = 0; i < NR_VECTORS; ++i) {
         __irqVect[i].irq = -1;
         __irqVect[i].isr = &__irq_dummyISR;
         __irqVect[i].priority = -1;
 
         /* Clear all vector's VICVECTCNTLn and VICVECTADDRn registers: */
-        if ( i<NR_VECTORS )
-        {
+        if (i < NR_VECTORS) {
             pPicReg->VICVECTCNTLn[i] = UL0;
             pPicReg->VICVECTADDRn[i] = (uint32_t) &__irq_dummyISR;
         }
@@ -733,8 +689,7 @@ void pic_unregisterAllIrqs(void)
  */
 int8_t pic_setSwInterruptNr(uint8_t irq)
 {
-    if (irq>=NR_INTERRUPTS)
-    {
+    if (irq >= NR_INTERRUPTS) {
         return -1;
     }
 
@@ -743,7 +698,7 @@ int8_t pic_setSwInterruptNr(uint8_t irq)
      * See description of the register on page 3-8 of DDI0181.
      */
 
-    HWREG_SET_SINGLE_BIT( pPicReg->VICSOFTINT, irq );
+    HWREG_SET_SINGLE_BIT(pPicReg->VICSOFTINT, irq);
 
     return irq;
 }
@@ -767,8 +722,7 @@ int8_t pic_clearSwInterruptNr(uint8_t irq)
     uint32_t bitmask;
     uint8_t retVal = -1;
 
-    if (irq>=NR_INTERRUPTS)
-    {
+    if (irq >= NR_INTERRUPTS) {
         return -1;
     }
 
@@ -777,25 +731,24 @@ int8_t pic_clearSwInterruptNr(uint8_t irq)
      * See description of the register on page 3-8 of DDI0181.
      */
 
-     bitmask = HWREG_SINGLE_BIT_MASK(irq);
+    bitmask = HWREG_SINGLE_BIT_MASK(irq);
 
-     /*
-      * Before the interrupt is cleared it is checked whether it is active.
-      * TODO: should VICIRQSTATUS and VICFIQSTATUS be check instead of VICRAWINTR?
-      */
-     if ( 0 != HWREG_READ_BITS( pPicReg->VICRAWINTR, bitmask ) )
-     {
-         /* The interrupt is active, clear it
-          * * The register is write only and should not be read. Only 1-bits clear
-          * their corresponding IRQs, 0-bits have no effect on "their" IRQs.
-          */
+    /*
+     * Before the interrupt is cleared it is checked whether it is active.
+     * TODO: should VICIRQSTATUS and VICFIQSTATUS be check instead of VICRAWINTR?
+     */
+    if (0 != HWREG_READ_BITS(pPicReg->VICRAWINTR, bitmask)) {
+        /* The interrupt is active, clear it
+         * * The register is write only and should not be read. Only 1-bits clear
+         * their corresponding IRQs, 0-bits have no effect on "their" IRQs.
+         */
 
-         pPicReg->VICSOFTINTCLEAR = bitmask;
+        pPicReg->VICSOFTINTCLEAR = bitmask;
 
-         retVal = irq;
-     }
+        retVal = irq;
+    }
 
-     return retVal;
+    return retVal;
 }
 
 

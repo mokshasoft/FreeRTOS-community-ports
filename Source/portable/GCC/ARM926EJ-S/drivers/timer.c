@@ -81,8 +81,7 @@
  * 32-bit registers of each counter within a timer controller.
  * See page 3-2 of DDI0271:
  */
-typedef struct _SP804_COUNTER_REGS
-{
+typedef struct _SP804_COUNTER_REGS {
     uint32_t LOAD;                   /* Load Register, TimerXLoad */
     const uint32_t VALUE;            /* Current Value Register, TimerXValue, read only */
     uint32_t CONTROL;                /* Control Register, TimerXControl */
@@ -99,8 +98,7 @@ typedef struct _SP804_COUNTER_REGS
  * relative to the controllers' base address:
  * See page 3-2 of DDI0271:
  */
-typedef struct _ARM926EJS_TIMER_REGS
-{
+typedef struct _ARM926EJS_TIMER_REGS {
     SP804_COUNTER_REGS CNTR[NR_COUNTERS];     /* Registers for each of timer's two counters */
     const uint32_t Reserved1[944];            /* Reserved for future expansion, should not be modified */
     uint32_t ITCR;                            /* Integration Test Control Register */
@@ -116,10 +114,9 @@ typedef struct _ARM926EJS_TIMER_REGS
  */
 #define CAST_ADDR(ADDR)    (ARM926EJS_TIMER_REGS*) (ADDR),
 
-static volatile ARM926EJS_TIMER_REGS* const  pReg[BSP_NR_TIMERS] =
-                         {
-                             BSP_TIMER_BASE_ADDRESSES(CAST_ADDR)
-                         };
+static volatile ARM926EJS_TIMER_REGS* const  pReg[BSP_NR_TIMERS] = {
+    BSP_TIMER_BASE_ADDRESSES(CAST_ADDR)
+};
 
 #undef CAST_ADDR
 
@@ -141,8 +138,7 @@ void timer_init(uint8_t timerNr, uint8_t counterNr)
 {
 
     /* sanity check: */
-    if ( timerNr >= BSP_NR_TIMERS || counterNr >= NR_COUNTERS )
-    {
+    if (timerNr >= BSP_NR_TIMERS || counterNr >= NR_COUNTERS) {
         return;
     }
 
@@ -161,7 +157,7 @@ void timer_init(uint8_t timerNr, uint8_t counterNr)
      * - counter length (32-bit)
      */
 
-    HWREG_SET_BITS( pReg[timerNr]->CNTR[counterNr].CONTROL, ( CTL_MODE | CTL_CTRLEN ) );
+    HWREG_SET_BITS(pReg[timerNr]->CNTR[counterNr].CONTROL, (CTL_MODE | CTL_CTRLEN));
 
     /*
      * The following bits are will be to 0:
@@ -171,8 +167,8 @@ void timer_init(uint8_t timerNr, uint8_t counterNr)
      * - oneshot bit (wrapping mode)
      */
 
-    HWREG_CLEAR_BITS( pReg[timerNr]->CNTR[counterNr].CONTROL,
-    		( CTL_ENABLE | CTL_INTR | CTL_PRESCALE_1 | CTL_PRESCALE_2 | CTL_ONESHOT ) );
+    HWREG_CLEAR_BITS(pReg[timerNr]->CNTR[counterNr].CONTROL,
+                     (CTL_ENABLE | CTL_INTR | CTL_PRESCALE_1 | CTL_PRESCALE_2 | CTL_ONESHOT));
 
     /* reserved bits remained unmodified */
 }
@@ -190,13 +186,12 @@ void timer_start(uint8_t timerNr, uint8_t counterNr)
 {
 
     /* sanity check: */
-    if ( timerNr >= BSP_NR_TIMERS || counterNr >= NR_COUNTERS )
-    {
+    if (timerNr >= BSP_NR_TIMERS || counterNr >= NR_COUNTERS) {
         return;
     }
 
     /* Set bit 7 of the Control Register to 1, do not modify other bits */
-    HWREG_SET_BITS( pReg[timerNr]->CNTR[counterNr].CONTROL, CTL_ENABLE );
+    HWREG_SET_BITS(pReg[timerNr]->CNTR[counterNr].CONTROL, CTL_ENABLE);
 }
 
 
@@ -212,13 +207,12 @@ void timer_stop(uint8_t timerNr, uint8_t counterNr)
 {
 
     /* sanity check: */
-    if ( timerNr >= BSP_NR_TIMERS || counterNr >= NR_COUNTERS )
-    {
+    if (timerNr >= BSP_NR_TIMERS || counterNr >= NR_COUNTERS) {
         return;
     }
 
     /* Set bit 7 of the Control Register to 0, do not modify other bits */
-    HWREG_CLEAR_BITS( pReg[timerNr]->CNTR[counterNr].CONTROL, CTL_ENABLE );
+    HWREG_CLEAR_BITS(pReg[timerNr]->CNTR[counterNr].CONTROL, CTL_ENABLE);
 }
 
 
@@ -240,13 +234,12 @@ int8_t timer_isEnabled(uint8_t timerNr, uint8_t counterNr)
 {
 
     /* sanity check: */
-    if ( timerNr >= BSP_NR_TIMERS || counterNr >= NR_COUNTERS )
-    {
+    if (timerNr >= BSP_NR_TIMERS || counterNr >= NR_COUNTERS) {
         return 0;
     }
 
     /* just check the enable bit of the timer's Control Register */
-    return ( 0!=HWREG_READ_BITS( pReg[timerNr]->CNTR[counterNr].CONTROL, CTL_ENABLE ) );
+    return (0 != HWREG_READ_BITS(pReg[timerNr]->CNTR[counterNr].CONTROL, CTL_ENABLE));
 }
 
 
@@ -262,13 +255,12 @@ void timer_enableInterrupt(uint8_t timerNr, uint8_t counterNr)
 {
 
     /* sanity check: */
-    if ( timerNr >= BSP_NR_TIMERS || counterNr >= NR_COUNTERS )
-    {
+    if (timerNr >= BSP_NR_TIMERS || counterNr >= NR_COUNTERS) {
         return;
     }
 
     /* Set bit 5 of the Control Register to 1, do not modify other bits */
-    HWREG_SET_BITS( pReg[timerNr]->CNTR[counterNr].CONTROL, CTL_INTR );
+    HWREG_SET_BITS(pReg[timerNr]->CNTR[counterNr].CONTROL, CTL_INTR);
 }
 
 
@@ -284,13 +276,12 @@ void timer_disableInterrupt(uint8_t timerNr, uint8_t counterNr)
 {
 
     /* sanity check: */
-    if ( timerNr >= BSP_NR_TIMERS || counterNr >= NR_COUNTERS )
-    {
+    if (timerNr >= BSP_NR_TIMERS || counterNr >= NR_COUNTERS) {
         return;
     }
 
     /* Set bit 5 of the Control Register to 0, do not modify other bits */
-    HWREG_CLEAR_BITS( pReg[timerNr]->CNTR[counterNr].CONTROL, CTL_INTR );
+    HWREG_CLEAR_BITS(pReg[timerNr]->CNTR[counterNr].CONTROL, CTL_INTR);
 }
 
 
@@ -306,8 +297,7 @@ void timer_clearInterrupt(uint8_t timerNr, uint8_t counterNr)
 {
 
     /* sanity check: */
-    if ( timerNr >= BSP_NR_TIMERS || counterNr >= NR_COUNTERS )
-    {
+    if (timerNr >= BSP_NR_TIMERS || counterNr >= NR_COUNTERS) {
         return;
     }
 
@@ -338,8 +328,7 @@ void timer_setLoad(uint8_t timerNr, uint8_t counterNr, uint32_t value)
 {
 
     /* sanity check: */
-    if ( timerNr >= BSP_NR_TIMERS || counterNr >= NR_COUNTERS )
-    {
+    if (timerNr >= BSP_NR_TIMERS || counterNr >= NR_COUNTERS) {
         return;
     }
 
@@ -362,8 +351,7 @@ uint32_t timer_getValue(uint8_t timerNr, uint8_t counterNr)
 {
 
     /* sanity check: */
-    if ( timerNr >= BSP_NR_TIMERS || counterNr >= NR_COUNTERS )
-    {
+    if (timerNr >= BSP_NR_TIMERS || counterNr >= NR_COUNTERS) {
         return 0UL;
     }
 
@@ -389,12 +377,11 @@ const volatile uint32_t* timer_getValueAddr(uint8_t timerNr, uint8_t counterNr)
 {
 
     /* sanity check: */
-    if ( timerNr >= BSP_NR_TIMERS || counterNr >= NR_COUNTERS )
-    {
+    if (timerNr >= BSP_NR_TIMERS || counterNr >= NR_COUNTERS) {
         return NULL;
     }
 
-    return (const volatile uint32_t*) &(pReg[timerNr]->CNTR[counterNr].VALUE);
+    return (const volatile uint32_t*) & (pReg[timerNr]->CNTR[counterNr].VALUE);
 }
 
 

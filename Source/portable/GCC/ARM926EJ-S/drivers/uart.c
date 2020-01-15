@@ -144,8 +144,7 @@
  * the remaining bits should be handled, therefore they will be treated as
  * "should not be modified".
  */
-typedef struct _ARM926EJS_UART_REGS
-{
+typedef struct _ARM926EJS_UART_REGS {
     uint32_t UARTDR;                   /* UART Data Register, UARTDR */
     uint32_t UARTRSR;                  /* Receive Status Register, Error Clear Register, UARTRSR/UARTECR */
     const uint32_t Reserved1[4];       /* reserved, should not be modified */
@@ -176,10 +175,9 @@ typedef struct _ARM926EJS_UART_REGS
 
 #define CAST_ADDR(ADDR)    (ARM926EJS_UART_REGS*) (ADDR),
 
-static volatile ARM926EJS_UART_REGS* const  pReg[BSP_NR_UARTS] =
-                         {
-                             BSP_UART_BASE_ADDRESSES(CAST_ADDR)
-                         };
+static volatile ARM926EJS_UART_REGS* const  pReg[BSP_NR_UARTS] = {
+    BSP_UART_BASE_ADDRESSES(CAST_ADDR)
+};
 
 #undef CAST_ADDR
 
@@ -196,8 +194,7 @@ static volatile ARM926EJS_UART_REGS* const  pReg[BSP_NR_UARTS] =
 void uart_init(uint8_t nr)
 {
     /* Sanity check */
-    if ( nr >= BSP_NR_UARTS )
-    {
+    if (nr >= BSP_NR_UARTS) {
         return;
     }
 
@@ -213,10 +210,10 @@ void uart_init(uint8_t nr)
      * Whatever the current state, as suggested on page 3-16 of the DDI0183, the UART
      * should be disabled first:
      */
-    HWREG_CLEAR_BITS( pReg[nr]->UARTCR, CTL_UARTEN );
+    HWREG_CLEAR_BITS(pReg[nr]->UARTCR, CTL_UARTEN);
 
     /* Set Control Register's TXE to 1: */
-    HWREG_SET_BITS( pReg[nr]->UARTCR, CTL_TXE );
+    HWREG_SET_BITS(pReg[nr]->UARTCR, CTL_TXE);
 
     /*
      * Set all other bits (except UARTEN) of the Control Register to 0:
@@ -231,18 +228,18 @@ void uart_init(uint8_t nr)
      * - RTSEn
      * - CTSEn
      */
-    HWREG_CLEAR_BITS( pReg[nr]->UARTCR, (CTL_SIREN | CTL_SIRLP | CTL_LBE | CTL_RXE | CTL_DTR) );
-    HWREG_CLEAR_BITS( pReg[nr]->UARTCR, ( CTL_RTS | CTL_OUT1 | CTL_OUT2 | CTL_RTSEn | CTL_CTSEn ) );
+    HWREG_CLEAR_BITS(pReg[nr]->UARTCR, (CTL_SIREN | CTL_SIRLP | CTL_LBE | CTL_RXE | CTL_DTR));
+    HWREG_CLEAR_BITS(pReg[nr]->UARTCR, (CTL_RTS | CTL_OUT1 | CTL_OUT2 | CTL_RTSEn | CTL_CTSEn));
 
 
     /* By default, all interrupts are masked out (i.e. cleared to 0): */
-    HWREG_CLEAR_BITS( pReg[nr]->UARTIMSC, ( INT_RIMIM | INT_CTSMIM | INT_DCDMIM | INT_DSRMIM | INT_RXIM | INT_TXIM ) );
-    HWREG_CLEAR_BITS( pReg[nr]->UARTIMSC, ( INT_RTIM | INT_FEIM | INT_PEIM | INT_BEIM | INT_OEIM ) );
+    HWREG_CLEAR_BITS(pReg[nr]->UARTIMSC, (INT_RIMIM | INT_CTSMIM | INT_DCDMIM | INT_DSRMIM | INT_RXIM | INT_TXIM));
+    HWREG_CLEAR_BITS(pReg[nr]->UARTIMSC, (INT_RTIM | INT_FEIM | INT_PEIM | INT_BEIM | INT_OEIM));
 
     /* TODO: line control... */
 
     /* Finally enable the UART: */
-    HWREG_SET_BITS( pReg[nr]->UARTCR, CTL_UARTEN );
+    HWREG_SET_BITS(pReg[nr]->UARTCR, CTL_UARTEN);
 
     /* reserved bits remained unmodified */
 }
@@ -260,34 +257,33 @@ void uart_init(uint8_t nr)
  */
 static inline void __printCh(uint8_t nr, char ch)
 {
-   /*
-    * Qemu ignores other UART's registers, anyway the Flag Register is checked
-    * to better emulate a "real" UART controller.
-    * See description of the register on page 3-8 of DDI0183 for more details.
-    */
+    /*
+     * Qemu ignores other UART's registers, anyway the Flag Register is checked
+     * to better emulate a "real" UART controller.
+     * See description of the register on page 3-8 of DDI0183 for more details.
+     */
 
-   /*
-    * Poll the Flag Register's TXFF bit until the Transmit FIFO is not full.
-    * When the TXFF bit is set to 1, the controller's internal Transmit FIFO is full.
-    * In this case, wait until some "waiting" characters have been transmitted and
-    * the TXFF is set to 0, indicating the Transmit FIFO can accept additional characters.
-    */
-   while ( 0 != HWREG_READ_BITS( pReg[nr]->UARTFR, FR_TXFF ) )
-   { 
-       /* an empty loop; prevents "-Werror=misleading-indentation" */
-   }
+    /*
+     * Poll the Flag Register's TXFF bit until the Transmit FIFO is not full.
+     * When the TXFF bit is set to 1, the controller's internal Transmit FIFO is full.
+     * In this case, wait until some "waiting" characters have been transmitted and
+     * the TXFF is set to 0, indicating the Transmit FIFO can accept additional characters.
+     */
+    while (0 != HWREG_READ_BITS(pReg[nr]->UARTFR, FR_TXFF)) {
+        /* an empty loop; prevents "-Werror=misleading-indentation" */
+    }
 
-   /*
-    * The Data Register is a 32-bit word, however only the least significant 8 bits
-    * can be assigned the character to be sent, while other bits represent various flags
-    * and should not be set to 0. For that reason, the following trick is introduced:
-    *
-    * Casting the Data Register's address to char* effectively turns the word into an array
-    * of (four) 8-bit characters. Now, dereferencing the first character of this array affects
-    * only the desired character itself, not the whole word.
-    */
+    /*
+     * The Data Register is a 32-bit word, however only the least significant 8 bits
+     * can be assigned the character to be sent, while other bits represent various flags
+     * and should not be set to 0. For that reason, the following trick is introduced:
+     *
+     * Casting the Data Register's address to char* effectively turns the word into an array
+     * of (four) 8-bit characters. Now, dereferencing the first character of this array affects
+     * only the desired character itself, not the whole word.
+     */
 
-    *( (char*) &(pReg[nr]->UARTDR) ) = ch;
+    *((char*) & (pReg[nr]->UARTDR)) = ch;
 }
 
 
@@ -302,8 +298,7 @@ static inline void __printCh(uint8_t nr, char ch)
 void uart_printChar(uint8_t nr, char ch)
 {
     /* Sanity check */
-    if ( nr >= BSP_NR_UARTS )
-    {
+    if (nr >= BSP_NR_UARTS) {
         return;
     }
 
@@ -332,19 +327,17 @@ void uart_print(uint8_t nr, const char* str)
     const char* cp;
 
     /* Sanity check */
-    if ( nr >= BSP_NR_UARTS )
-    {
+    if (nr >= BSP_NR_UARTS) {
         return;
     }
 
     /* handle possible NULL value of str: */
-    cp = ( NULL==str ? null_str : (char*) str );
+    cp = (NULL == str ? null_str : (char*) str);
 
     /*
      * Just print each character until a zero terminator is detected
      */
-    for ( ; '\0' != *cp; ++cp )
-    {
+    for (; '\0' != *cp; ++cp) {
         __printCh(nr, *cp);
     }
 }
@@ -360,12 +353,11 @@ void uart_print(uint8_t nr, const char* str)
 void uart_enableUart(uint8_t nr)
 {
     /* Sanity check */
-    if ( nr >= BSP_NR_UARTS )
-    {
+    if (nr >= BSP_NR_UARTS) {
         return;
     }
 
-    HWREG_SET_BITS( pReg[nr]->UARTCR, CTL_UARTEN );
+    HWREG_SET_BITS(pReg[nr]->UARTCR, CTL_UARTEN);
 }
 
 
@@ -379,12 +371,11 @@ void uart_enableUart(uint8_t nr)
 void uart_disableUart(uint8_t nr)
 {
     /* Sanity check */
-    if ( nr >= BSP_NR_UARTS )
-    {
+    if (nr >= BSP_NR_UARTS) {
         return;
     }
 
-    HWREG_CLEAR_BITS( pReg[nr]->UARTCR, CTL_UARTEN );
+    HWREG_CLEAR_BITS(pReg[nr]->UARTCR, CTL_UARTEN);
 }
 
 
@@ -403,36 +394,31 @@ static inline void __setCrBit(uint8_t nr, bool set, uint32_t bitmask)
     uint32_t enabled;
 
     /* Sanity check */
-    if ( nr >= BSP_NR_UARTS )
-    {
+    if (nr >= BSP_NR_UARTS) {
         return;
     }
 
     /* Store UART's enable status (UARTEN) */
-    enabled = HWREG_READ_BITS( pReg[nr]->UARTCR, CTL_UARTEN );
+    enabled = HWREG_READ_BITS(pReg[nr]->UARTCR, CTL_UARTEN);
 
     /*
      * As suggested on page 3-16 of the DDI0183, the UART should be disabled
      * prior to any modification of the Control Register
      */
-    HWREG_CLEAR_BITS( pReg[nr]->UARTCR, CTL_UARTEN );
+    HWREG_CLEAR_BITS(pReg[nr]->UARTCR, CTL_UARTEN);
 
     /* Depending on 'set'... */
-    if (set)
-    {
+    if (set) {
         /* Set bitmask's bits to 1 using bitwise OR */
-        HWREG_SET_BITS( pReg[nr]->UARTCR, bitmask );
-    }
-    else
-    {
+        HWREG_SET_BITS(pReg[nr]->UARTCR, bitmask);
+    } else {
         /* Clear bitmask's bits to 0 using bitwise AND */
-        HWREG_CLEAR_BITS( pReg[nr]->UARTCR, bitmask );
+        HWREG_CLEAR_BITS(pReg[nr]->UARTCR, bitmask);
     }
 
     /* Reenable the UART if it was been enabled before */
-    if (enabled)
-    {
-        HWREG_SET_BITS( pReg[nr]->UARTCR, CTL_UARTEN );
+    if (enabled) {
+        HWREG_SET_BITS(pReg[nr]->UARTCR, CTL_UARTEN);
     }
 }
 
@@ -503,13 +489,12 @@ void uart_disableRx(uint8_t nr)
 void uart_enableRxInterrupt(uint8_t nr)
 {
     /* Sanity check */
-    if ( nr >= BSP_NR_UARTS )
-    {
+    if (nr >= BSP_NR_UARTS) {
         return;
     }
 
     /* Set bit 4 of the IMSC register: */
-    HWREG_SET_BITS( pReg[nr]->UARTIMSC, INT_RXIM );
+    HWREG_SET_BITS(pReg[nr]->UARTIMSC, INT_RXIM);
 }
 
 
@@ -523,13 +508,12 @@ void uart_enableRxInterrupt(uint8_t nr)
 void uart_disableRxInterrupt(uint8_t nr)
 {
     /* Sanity check */
-    if ( nr >= BSP_NR_UARTS )
-    {
+    if (nr >= BSP_NR_UARTS) {
         return;
     }
 
     /* Clear bit 4 of the IMSC register: */
-    HWREG_CLEAR_BITS( pReg[nr]->UARTIMSC, INT_RXIM );
+    HWREG_CLEAR_BITS(pReg[nr]->UARTIMSC, INT_RXIM);
 }
 
 
@@ -543,8 +527,7 @@ void uart_disableRxInterrupt(uint8_t nr)
 void uart_clearRxInterrupt(uint8_t nr)
 {
     /* Sanity check */
-    if ( nr >= BSP_NR_UARTS )
-    {
+    if (nr >= BSP_NR_UARTS) {
         return;
     }
 
@@ -572,13 +555,12 @@ void uart_clearRxInterrupt(uint8_t nr)
 char uart_readChar(uint8_t nr)
 {
     /* Sanity check */
-    if ( nr >= BSP_NR_UARTS )
-    {
+    if (nr >= BSP_NR_UARTS) {
         return (char) 0;
     }
 
     /* Wait until the receiving FIFO is not empty */
-    while ( 0 != HWREG_READ_BITS( pReg[nr]->UARTFR, FR_RXFE ) );
+    while (0 != HWREG_READ_BITS(pReg[nr]->UARTFR, FR_RXFE));
 
     /*
      * UART DR is a 32-bit register and only the least significant byte must be returned.
@@ -587,5 +569,5 @@ char uart_readChar(uint8_t nr)
      * only the desired character itself, not the whole word.
      */
 
-    return *( (char*) &(pReg[nr]->UARTDR) );
+    return *((char*) & (pReg[nr]->UARTDR));
 }
