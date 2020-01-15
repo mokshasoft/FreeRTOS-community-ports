@@ -224,7 +224,6 @@ void D_NOT(void)
 static void prvSetupTimerInterrupt( void )
 {
 	volatile int i;
-    	volatile unsigned long ul; 
 	unsigned long ulCompareMatch;
 	extern void ( vIRQHandler )( void );
 	extern void ( vPortYieldProcessor ) ( void );
