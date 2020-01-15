@@ -68,11 +68,11 @@ typedef int32_t BaseType_t;
 typedef uint32_t UBaseType_t;
 
 #if( configUSE_16_BIT_TICKS == 1 )
-    typedef uint16_t TickType_t;
-    #define portMAX_DELAY ( TickType_t ) 0xffff
+typedef uint16_t TickType_t;
+#define portMAX_DELAY ( TickType_t ) 0xffff
 #else
-    typedef uint32_t TickType_t;
-    #define portMAX_DELAY ( TickType_t ) 0xffffffffUL
+typedef uint32_t TickType_t;
+#define portMAX_DELAY ( TickType_t ) 0xffffffffUL
 #endif
 /*-----------------------------------------------------------*/
 
@@ -193,15 +193,15 @@ extern void vTaskSwitchContext( void );
 
 #ifdef THUMB_INTERWORK
 
-    extern void vPortDisableInterruptsFromThumb( void ) __attribute__ ((naked));
-    extern void vPortEnableInterruptsFromThumb( void ) __attribute__ ((naked));
+extern void vPortDisableInterruptsFromThumb( void ) __attribute__ ((naked));
+extern void vPortEnableInterruptsFromThumb( void ) __attribute__ ((naked));
 
-    #define portDISABLE_INTERRUPTS()    vPortDisableInterruptsFromThumb()
-    #define portENABLE_INTERRUPTS()     vPortEnableInterruptsFromThumb()
+#define portDISABLE_INTERRUPTS() vPortDisableInterruptsFromThumb()
+#define portENABLE_INTERRUPTS()  vPortEnableInterruptsFromThumb()
 
 #else
 
-    #define portDISABLE_INTERRUPTS()                                            \
+#define portDISABLE_INTERRUPTS()                                            \
         __asm volatile (                                                        \
             "STMDB  SP!, {R0}       \n\t"   /* Push R0.                     */  \
             "MRS    R0, CPSR        \n\t"   /* Get CPSR.                    */  \
@@ -209,13 +209,13 @@ extern void vTaskSwitchContext( void );
             "MSR    CPSR, R0        \n\t"   /* Write back modified value.   */  \
             "LDMIA  SP!, {R0}           " ) /* Pop R0.                      */
 
-    /*
-     * NOTE:
-     * As FIQ is currently not supported, it is not enabled by the macro.
-     * If this is necessary, replace #0x80 by #0xC0.
-     */
-    #define portENABLE_INTERRUPTS()												\
-        __asm volatile (														\
+/*
+ * NOTE:
+ * As FIQ is currently not supported, it is not enabled by the macro.
+ * If this is necessary, replace #0x80 by #0xC0.
+ */
+#define portENABLE_INTERRUPTS()                                                \
+        __asm volatile (                                                        \
             "STMDB  SP!, {R0}       \n\t"   /* Push R0.                     */  \
             "MRS    R0, CPSR        \n\t"   /* Get CPSR.                    */  \
             "BIC    R0, R0, #0x80   \n\t"   /* Enable IRQ                   */  \

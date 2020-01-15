@@ -92,7 +92,7 @@ extern void vPortISRStartFirstTask( void );
  */
 StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t pxCode, void *pvParameters )
 {
-StackType_t *pxOriginalTOS;
+    StackType_t *pxOriginalTOS;
 
     pxOriginalTOS = pxTopOfStack;
 
@@ -109,33 +109,33 @@ StackType_t *pxOriginalTOS;
     *pxTopOfStack = ( StackType_t ) pxCode + portINSTRUCTION_SIZE;
     pxTopOfStack--;
 
-    *pxTopOfStack = ( StackType_t ) 0xaaaaaaaa;	/* R14 */
+    *pxTopOfStack = ( StackType_t ) 0xaaaaaaaa;    /* R14 */
     pxTopOfStack--;
     *pxTopOfStack = ( StackType_t ) pxOriginalTOS; /* Stack used when task starts goes in R13. */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x12121212;	/* R12 */
+    *pxTopOfStack = ( StackType_t ) 0x12121212;    /* R12 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x11111111;	/* R11 */
+    *pxTopOfStack = ( StackType_t ) 0x11111111;    /* R11 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x10101010;	/* R10 */
+    *pxTopOfStack = ( StackType_t ) 0x10101010;    /* R10 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x09090909;	/* R9 */
+    *pxTopOfStack = ( StackType_t ) 0x09090909;    /* R9 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x08080808;	/* R8 */
+    *pxTopOfStack = ( StackType_t ) 0x08080808;    /* R8 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x07070707;	/* R7 */
+    *pxTopOfStack = ( StackType_t ) 0x07070707;    /* R7 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x06060606;	/* R6 */
+    *pxTopOfStack = ( StackType_t ) 0x06060606;    /* R6 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x05050505;	/* R5 */
+    *pxTopOfStack = ( StackType_t ) 0x05050505;    /* R5 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x04040404;	/* R4 */
+    *pxTopOfStack = ( StackType_t ) 0x04040404;    /* R4 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x03030303;	/* R3 */
+    *pxTopOfStack = ( StackType_t ) 0x03030303;    /* R3 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x02020202;	/* R2 */
+    *pxTopOfStack = ( StackType_t ) 0x02020202;    /* R2 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x01010101;	/* R1 */
+    *pxTopOfStack = ( StackType_t ) 0x01010101;    /* R1 */
     pxTopOfStack--;
 
     /* When the task starts it will expect to find the function parameter in
@@ -147,8 +147,7 @@ StackType_t *pxOriginalTOS;
     system mode, with interrupts enabled. */
     *pxTopOfStack = ( StackType_t ) portINITIAL_SPSR;
 
-    if( ( ( uint32_t ) pxCode & 0x01UL ) != 0x00 )
-    {
+    if ( ( ( uint32_t ) pxCode & 0x01UL ) != 0x00 ) {
         /* We want the task to start in thumb mode. */
         *pxTopOfStack |= portTHUMB_MODE_BIT;
     }
@@ -201,7 +200,7 @@ static void prvSetupTimerInterrupt( void )
 #error Invalid timer selected!
 #endif
 
-	uint32_t ulCompareMatch;
+    uint32_t ulCompareMatch;
     const uint8_t irqs[BSP_NR_TIMERS] = BSP_TIMER_IRQS;
     const uint8_t irq = irqs[portTICK_TIMER];
 
@@ -214,8 +213,7 @@ static void prvSetupTimerInterrupt( void )
 
 
     /* Counter's load should always be greater than 0 */
-    if ( 0 == ulCompareMatch )
-    {
+    if ( 0 == ulCompareMatch ) {
         ulCompareMatch = 1;
     }
 

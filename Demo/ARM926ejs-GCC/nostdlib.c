@@ -45,7 +45,7 @@
  */
 static inline size_t minval(size_t x, size_t y)
 {
-    return ( x<=y ? x : y );
+    return ( x <= y ? x : y );
 }
 
 
@@ -67,8 +67,7 @@ void* memset(void* ptr, int value, size_t num )
     size_t n = num;
 
     /* sanity check */
-    if ( NULL==p )
-    {
+    if ( NULL == p ) {
         goto endf;
     }
 
@@ -76,15 +75,13 @@ void* memset(void* ptr, int value, size_t num )
      * If destination block exceeds the range of 'size_t',
      * decrease 'num' accordingly.
      */
-    if ( num > (size_t) ((unsigned char*) SIZE_T_MAX - p) )
-    {
+    if ( num > (size_t) ((unsigned char*) SIZE_T_MAX - p) ) {
         n = (unsigned char*) SIZE_T_MAX - p;
         /* TODO or maybe just goto endf???? */
     }
 
     /* Set 'value' to each byte of the block: */
-    while (n--)
-    {
+    while (n--) {
         *(p++) = (unsigned char) value;
     }
 
@@ -123,14 +120,12 @@ void* memcpy(void* destination, const void* source, size_t num )
     size_t n = num;
 
     /* sanity check */
-    if ( NULL==srcptr || NULL==destptr )
-    {
+    if ( NULL == srcptr || NULL == destptr ) {
         return NULL;
     }
 
     /* Nothing to do if attempting to copy to itself: */
-    if ( srcptr == destptr )
-    {
+    if ( srcptr == destptr ) {
         return destination;
     }
 
@@ -138,27 +133,22 @@ void* memcpy(void* destination, const void* source, size_t num )
      * If any block exceeds the range of 'size_t',
      * decrease 'num' accordingly.
      */
-    if ( num > (size_t) ((unsigned char*) SIZE_T_MAX-destptr) ||
-         num > (size_t) ((unsigned char*) SIZE_T_MAX-srcptr) )
-    {
-        n = minval((unsigned char*) SIZE_T_MAX-destptr,
-                   (unsigned char*) SIZE_T_MAX-srcptr);
+    if ( num > (size_t) ((unsigned char*) SIZE_T_MAX - destptr) ||
+            num > (size_t) ((unsigned char*) SIZE_T_MAX - srcptr) ) {
+        n = minval((unsigned char*) SIZE_T_MAX - destptr,
+                   (unsigned char*) SIZE_T_MAX - srcptr);
         /* TODO or maybe just return destination? */
     }
 
-    if ( destptr<srcptr || destptr>=(srcptr+n) )
-    {
+    if ( destptr < srcptr || destptr >= (srcptr + n) ) {
         /*
          * If blocks do not overlap or or backwards copy is requested,
          * it is safe to copy the source block from begin to end.
          */
-        while (n--)
-        {
+        while (n--) {
             *destptr++ = *srcptr++;
         }
-    }
-    else
-    {
+    } else {
         /*
          * If forward copy is requested and blocks overlap, forward copy
          * (from block's begin to end) would cause a corruption.
@@ -167,8 +157,7 @@ void* memcpy(void* destination, const void* source, size_t num )
         srcptr += n - 1;
         destptr += n - 1;
 
-        while (n--)
-        {
+        while (n--) {
             *destptr-- = *srcptr--;
         }
     }
@@ -198,13 +187,11 @@ char* strcpy (char* destination, const char* source)
     char* destptr = destination;
 
     /* sanity check */
-    if ( NULL==destptr || NULL==srcptr )
-    {
+    if ( NULL == destptr || NULL == srcptr ) {
         return NULL;
     }
 
-    while ( '\0' != *srcptr )
-    {
+    while ( '\0' != *srcptr ) {
         *destptr++ = *srcptr++;
     }
 

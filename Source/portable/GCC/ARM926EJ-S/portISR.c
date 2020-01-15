@@ -72,7 +72,7 @@
 
 
 /* Constants required to handle critical sections. */
-#define portNO_CRITICAL_NESTING		( ( uint32_t) 0 )
+#define portNO_CRITICAL_NESTING        ( ( uint32_t) 0 )
 volatile unsigned long ulCriticalNesting = 9999UL;
 
 /*-----------------------------------------------------------*/
@@ -172,35 +172,35 @@ void vTickISR( void )
  */
 #ifdef THUMB_INTERWORK
 
-    void vPortDisableInterruptsFromThumb( void ) __attribute__ ((naked));
-    void vPortEnableInterruptsFromThumb( void ) __attribute__ ((naked));
+void vPortDisableInterruptsFromThumb( void ) __attribute__ ((naked));
+void vPortEnableInterruptsFromThumb( void ) __attribute__ ((naked));
 
-    void vPortDisableInterruptsFromThumb( void )
-    {
-        __asm volatile (
-            "STMDB  SP!, {R0}       \n\t"   /* Push R0.                                 */
-            "MRS    R0, CPSR        \n\t"   /* Get CPSR.                                */
-            "ORR    R0, R0, #0xC0   \n\t"   /* Disable IRQ, FIQ.                        */
-            "MSR    CPSR, R0        \n\t"   /* Write back modified value.               */
-            "LDMIA  SP!, {R0}       \n\t"   /* Pop R0.                                  */
-            "BX     R14" );                 /* Return back to thumb.                    */
-    }
+void vPortDisableInterruptsFromThumb( void )
+{
+    __asm volatile (
+        "STMDB  SP!, {R0}       \n\t"   /* Push R0.                                 */
+        "MRS    R0, CPSR        \n\t"   /* Get CPSR.                                */
+        "ORR    R0, R0, #0xC0   \n\t"   /* Disable IRQ, FIQ.                        */
+        "MSR    CPSR, R0        \n\t"   /* Write back modified value.               */
+        "LDMIA  SP!, {R0}       \n\t"   /* Pop R0.                                  */
+        "BX     R14" );                 /* Return back to thumb.                    */
+}
 
-    void vPortEnableInterruptsFromThumb( void )
-    {
-        /*
-         * NOTE:
-         * As FIQ is currently not supported, it is not enabled by the macro.
-         * If this is necessary, replace #0x80 by #0xC0.
-         */
-        __asm volatile (
-            "STMDB  SP!, {R0}       \n\t"   /* Push R0.                                 */
-            "MRS    R0, CPSR        \n\t"   /* Get CPSR.                                */
-            "BIC    R0, R0, #0x80   \n\t"   /* Enable IRQ.                              */
-            "MSR    CPSR, R0        \n\t"   /* Write back modified value.               */
-            "LDMIA  SP!, {R0}       \n\t"   /* Pop R0.                                  */
-            "BX	    R14" );                 /* Return back to thumb.                    */
-    }
+void vPortEnableInterruptsFromThumb( void )
+{
+    /*
+     * NOTE:
+     * As FIQ is currently not supported, it is not enabled by the macro.
+     * If this is necessary, replace #0x80 by #0xC0.
+     */
+    __asm volatile (
+        "STMDB  SP!, {R0}       \n\t"   /* Push R0.                                 */
+        "MRS    R0, CPSR        \n\t"   /* Get CPSR.                                */
+        "BIC    R0, R0, #0x80   \n\t"   /* Enable IRQ.                              */
+        "MSR    CPSR, R0        \n\t"   /* Write back modified value.               */
+        "LDMIA  SP!, {R0}       \n\t"   /* Pop R0.                                  */
+        "BX        R14" );                 /* Return back to thumb.                    */
+}
 
 #endif /* THUMB_INTERWORK */
 
@@ -226,15 +226,13 @@ void vPortEnterCritical( void )
 
 void vPortExitCritical( void )
 {
-    if( ulCriticalNesting > portNO_CRITICAL_NESTING )
-    {
+    if ( ulCriticalNesting > portNO_CRITICAL_NESTING ) {
         /* Decrement the nesting count as we are leaving a critical section. */
         ulCriticalNesting--;
 
         /* If the nesting level has reached zero then interrupts should be
         re-enabled. */
-        if( ulCriticalNesting == portNO_CRITICAL_NESTING )
-        {
+        if ( ulCriticalNesting == portNO_CRITICAL_NESTING ) {
             /*
              * NOTE:
              * As FIQ is currently not supported, it is not enabled by the macro.
