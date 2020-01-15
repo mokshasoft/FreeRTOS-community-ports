@@ -85,14 +85,14 @@ int16_t printInit(uint8_t uart_nr)
      * Initialize the character print buffer.
      * It is sufficient to set each string's second character to '\0'.
      */
-    for ( i = 0; i < PRINT_CHR_BUF_SIZE; ++i ) {
+    for (i = 0; i < PRINT_CHR_BUF_SIZE; ++i) {
         printChBuf[i][1] = '\0';
     }
 
     chBufCntr = 0;
 
     /* Check if UART number is valid */
-    if ( uart_nr >= BSP_NR_UARTS ) {
+    if (uart_nr >= BSP_NR_UARTS) {
         return pdFAIL;
     }
 
@@ -100,7 +100,7 @@ int16_t printInit(uint8_t uart_nr)
 
     /* Create and assert a queue for the gate keeper task */
     printQueue = xQueueCreate(PRINT_QUEUE_SIZE, sizeof(portCHAR*));
-    if ( 0 == printQueue ) {
+    if (0 == printQueue) {
         return pdFAIL;
     }
 
@@ -122,7 +122,7 @@ void printGateKeeperTask(void* params)
 {
     portCHAR* message;
 
-    for ( ; ; ) {
+    for (; ;) {
         /* The task is blocked until something appears in the queue */
         xQueueReceive(printQueue, (void*) &message, portMAX_DELAY);
         /* Print the message in the queue */
@@ -149,7 +149,7 @@ void printGateKeeperTask(void* params)
  */
 void vPrintMsg(const portCHAR* msg)
 {
-    if ( NULL != msg ) {
+    if (NULL != msg) {
         xQueueSendToBack(printQueue, (void*) &msg, 0);
     }
 }
@@ -201,7 +201,7 @@ void vPrintChar(portCHAR ch)
  */
 void vDirectPrintMsg(const portCHAR* msg)
 {
-    if ( NULL != msg ) {
+    if (NULL != msg) {
         uart_print(printUartNr, msg);
     }
 }

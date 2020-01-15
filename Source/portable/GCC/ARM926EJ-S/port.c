@@ -74,13 +74,13 @@
 /*-----------------------------------------------------------*/
 
 /* Setup the timer to generate the tick interrupts. */
-static void prvSetupTimerInterrupt( void );
+static void prvSetupTimerInterrupt(void);
 
 /*
  * The scheduler can only be started from ARM mode, so
  * vPortISRStartFirstSTask() is defined in portISR.c.
  */
-extern void vPortISRStartFirstTask( void );
+extern void vPortISRStartFirstTask(void);
 
 /*-----------------------------------------------------------*/
 
@@ -90,7 +90,7 @@ extern void vPortISRStartFirstTask( void );
  *
  * See header file for description.
  */
-StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t pxCode, void *pvParameters )
+StackType_t *pxPortInitialiseStack(StackType_t *pxTopOfStack, TaskFunction_t pxCode, void *pvParameters)
 {
     StackType_t *pxOriginalTOS;
 
@@ -106,48 +106,48 @@ StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t px
     /* First on the stack is the return address - which in this case is the
     start of the task.  The offset is added to make the return address appear
     as it would within an IRQ ISR. */
-    *pxTopOfStack = ( StackType_t ) pxCode + portINSTRUCTION_SIZE;
+    *pxTopOfStack = (StackType_t) pxCode + portINSTRUCTION_SIZE;
     pxTopOfStack--;
 
-    *pxTopOfStack = ( StackType_t ) 0xaaaaaaaa;    /* R14 */
+    *pxTopOfStack = (StackType_t) 0xaaaaaaaa;      /* R14 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) pxOriginalTOS; /* Stack used when task starts goes in R13. */
+    *pxTopOfStack = (StackType_t) pxOriginalTOS;   /* Stack used when task starts goes in R13. */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x12121212;    /* R12 */
+    *pxTopOfStack = (StackType_t) 0x12121212;      /* R12 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x11111111;    /* R11 */
+    *pxTopOfStack = (StackType_t) 0x11111111;      /* R11 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x10101010;    /* R10 */
+    *pxTopOfStack = (StackType_t) 0x10101010;      /* R10 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x09090909;    /* R9 */
+    *pxTopOfStack = (StackType_t) 0x09090909;      /* R9 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x08080808;    /* R8 */
+    *pxTopOfStack = (StackType_t) 0x08080808;      /* R8 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x07070707;    /* R7 */
+    *pxTopOfStack = (StackType_t) 0x07070707;      /* R7 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x06060606;    /* R6 */
+    *pxTopOfStack = (StackType_t) 0x06060606;      /* R6 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x05050505;    /* R5 */
+    *pxTopOfStack = (StackType_t) 0x05050505;      /* R5 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x04040404;    /* R4 */
+    *pxTopOfStack = (StackType_t) 0x04040404;      /* R4 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x03030303;    /* R3 */
+    *pxTopOfStack = (StackType_t) 0x03030303;      /* R3 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x02020202;    /* R2 */
+    *pxTopOfStack = (StackType_t) 0x02020202;      /* R2 */
     pxTopOfStack--;
-    *pxTopOfStack = ( StackType_t ) 0x01010101;    /* R1 */
+    *pxTopOfStack = (StackType_t) 0x01010101;      /* R1 */
     pxTopOfStack--;
 
     /* When the task starts it will expect to find the function parameter in
      R0. */
-    *pxTopOfStack = ( StackType_t ) pvParameters; /* R0 */
+    *pxTopOfStack = (StackType_t) pvParameters;   /* R0 */
     pxTopOfStack--;
 
     /* The last thing onto the stack is the status register, which is set for
     system mode, with interrupts enabled. */
-    *pxTopOfStack = ( StackType_t ) portINITIAL_SPSR;
+    *pxTopOfStack = (StackType_t) portINITIAL_SPSR;
 
-    if ( ( ( uint32_t ) pxCode & 0x01UL ) != 0x00 ) {
+    if (((uint32_t) pxCode & 0x01UL) != 0x00) {
         /* We want the task to start in thumb mode. */
         *pxTopOfStack |= portTHUMB_MODE_BIT;
     }
@@ -164,7 +164,7 @@ StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t px
 }
 /*-----------------------------------------------------------*/
 
-BaseType_t xPortStartScheduler( void )
+BaseType_t xPortStartScheduler(void)
 {
     /* Start the timer that generates the tick ISR.  Interrupts are disabled
     here already. */
@@ -178,7 +178,7 @@ BaseType_t xPortStartScheduler( void )
 }
 /*-----------------------------------------------------------*/
 
-void vPortEndScheduler( void )
+void vPortEndScheduler(void)
 {
     /* It is unlikely that the ARM port will require this function as there
     is nothing to return to.  */
@@ -189,7 +189,7 @@ void vPortEndScheduler( void )
 /*
  * Setup the timer 0 and the VIC
  */
-static void prvSetupTimerInterrupt( void )
+static void prvSetupTimerInterrupt(void)
 {
     /*
      * If timer settings are inappropriate (portTICK_TIMER>=BSP_NR_TIMERS), this
@@ -207,13 +207,13 @@ static void prvSetupTimerInterrupt( void )
     extern void vTickISR(void);
 
     /* Calculate the match value required for our desired tick rate. */
-    ulCompareMatch = ( 0 != configTICK_RATE_HZ ?
-                       configCPU_CLOCK_HZ / configTICK_RATE_HZ :
-                       (uint32_t) (-1) );
+    ulCompareMatch = (0 != configTICK_RATE_HZ ?
+                      configCPU_CLOCK_HZ / configTICK_RATE_HZ :
+                      (uint32_t)(-1));
 
 
     /* Counter's load should always be greater than 0 */
-    if ( 0 == ulCompareMatch ) {
+    if (0 == ulCompareMatch) {
         ulCompareMatch = 1;
     }
 

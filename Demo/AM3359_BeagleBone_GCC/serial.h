@@ -82,8 +82,8 @@
 #define CFPS_REG            0x060
 
 void init_serial(unsigned int base);
-void serial_putsn (unsigned int base, const char *s, int n);
-void serial_putc (unsigned int base, const char c);
-void serial_puts (unsigned int base, const char *s);
+void serial_putsn(unsigned int base, const char *s, int n);
+void serial_putc(unsigned int base, const char c);
+void serial_puts(unsigned int base, const char *s);
 
 #endif    /* __SERIAL_H_ */

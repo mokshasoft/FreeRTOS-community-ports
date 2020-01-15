@@ -56,14 +56,14 @@ void _init(void)
     pic_init();
 
     /* Init all counters of all available timers */
-    for ( i = 0; i < BSP_NR_TIMERS; ++i ) {
-        for ( j = 0; j < ctrs; ++j ) {
+    for (i = 0; i < BSP_NR_TIMERS; ++i) {
+        for (j = 0; j < ctrs; ++j) {
             timer_init(i, j);
         }
     }
 
     /* Init all available UARTs */
-    for ( i = 0; i < BSP_NR_UARTS; ++i ) {
+    for (i = 0; i < BSP_NR_UARTS; ++i) {
         uart_init(i);
     }
 

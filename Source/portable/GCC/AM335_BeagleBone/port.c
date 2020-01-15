@@ -76,16 +76,16 @@
 
 /*-----------------------------------------------------------*/
 /* Helper functions */
-extern void RegWrite( unsigned int base, unsigned int offset, unsigned int value);
-extern void dumpinterrupts( void );
-extern void dumptimer( void );
-extern unsigned int RegRead( unsigned int base, unsigned int offset);
+extern void RegWrite(unsigned int base, unsigned int offset, unsigned int value);
+extern void dumpinterrupts(void);
+extern void dumptimer(void);
+extern unsigned int RegRead(unsigned int base, unsigned int offset);
 
 
 /*-----------------------------------------------------------*/
 
 /* Setup the timer to generate the tick interrupts. */
-static void prvSetupTimerInterrupt( void );
+static void prvSetupTimerInterrupt(void);
 
 /* U-boot code uses Timer 1 */
 
@@ -95,7 +95,7 @@ static void prvSetupTimerInterrupt( void );
  * The scheduler can only be started from ARM mode, so
  * vPortISRStartFirstSTask() is defined in portISR.c.
  */
-extern void vPortISRStartFirstTask( void );
+extern void vPortISRStartFirstTask(void);
 
 /*-----------------------------------------------------------*/
 
@@ -111,7 +111,7 @@ void D_NOT(void);
  *
  * See header file for description.
  */
-portSTACK_TYPE *pxPortInitialiseStack( portSTACK_TYPE *pxTopOfStack, pdTASK_CODE pxCode, void *pvParameters )
+portSTACK_TYPE *pxPortInitialiseStack(portSTACK_TYPE *pxTopOfStack, pdTASK_CODE pxCode, void *pvParameters)
 {
     portSTACK_TYPE *pxOriginalTOS;
 
@@ -123,48 +123,48 @@ portSTACK_TYPE *pxPortInitialiseStack( portSTACK_TYPE *pxTopOfStack, pdTASK_CODE
     /* First on the stack is the return address - which in this case is the
     start of the task.  The offset is added to make the return address appear
     as it would within an IRQ ISR. */
-    *pxTopOfStack = ( portSTACK_TYPE ) pxCode + portINSTRUCTION_SIZE;
+    *pxTopOfStack = (portSTACK_TYPE) pxCode + portINSTRUCTION_SIZE;
     pxTopOfStack--;
 
-    *pxTopOfStack = ( portSTACK_TYPE ) 0xaaaaaaaa;    /* R14 */
+    *pxTopOfStack = (portSTACK_TYPE) 0xaaaaaaaa;      /* R14 */
     pxTopOfStack--;
-    *pxTopOfStack = ( portSTACK_TYPE ) pxOriginalTOS; /* Stack used when task starts goes in R13. */
+    *pxTopOfStack = (portSTACK_TYPE) pxOriginalTOS;   /* Stack used when task starts goes in R13. */
     pxTopOfStack--;
-    *pxTopOfStack = ( portSTACK_TYPE ) 0x12121212;    /* R12 */
+    *pxTopOfStack = (portSTACK_TYPE) 0x12121212;      /* R12 */
     pxTopOfStack--;
-    *pxTopOfStack = ( portSTACK_TYPE ) 0x11111111;    /* R11 */
+    *pxTopOfStack = (portSTACK_TYPE) 0x11111111;      /* R11 */
     pxTopOfStack--;
-    *pxTopOfStack = ( portSTACK_TYPE ) 0x10101010;    /* R10 */
+    *pxTopOfStack = (portSTACK_TYPE) 0x10101010;      /* R10 */
     pxTopOfStack--;
-    *pxTopOfStack = ( portSTACK_TYPE ) 0x09090909;    /* R9 */
+    *pxTopOfStack = (portSTACK_TYPE) 0x09090909;      /* R9 */
     pxTopOfStack--;
-    *pxTopOfStack = ( portSTACK_TYPE ) 0x08080808;    /* R8 */
+    *pxTopOfStack = (portSTACK_TYPE) 0x08080808;      /* R8 */
     pxTopOfStack--;
-    *pxTopOfStack = ( portSTACK_TYPE ) 0x07070707;    /* R7 */
+    *pxTopOfStack = (portSTACK_TYPE) 0x07070707;      /* R7 */
     pxTopOfStack--;
-    *pxTopOfStack = ( portSTACK_TYPE ) 0x06060606;    /* R6 */
+    *pxTopOfStack = (portSTACK_TYPE) 0x06060606;      /* R6 */
     pxTopOfStack--;
-    *pxTopOfStack = ( portSTACK_TYPE ) 0x05050505;    /* R5 */
+    *pxTopOfStack = (portSTACK_TYPE) 0x05050505;      /* R5 */
     pxTopOfStack--;
-    *pxTopOfStack = ( portSTACK_TYPE ) 0x04040404;    /* R4 */
+    *pxTopOfStack = (portSTACK_TYPE) 0x04040404;      /* R4 */
     pxTopOfStack--;
-    *pxTopOfStack = ( portSTACK_TYPE ) 0x03030303;    /* R3 */
+    *pxTopOfStack = (portSTACK_TYPE) 0x03030303;      /* R3 */
     pxTopOfStack--;
-    *pxTopOfStack = ( portSTACK_TYPE ) 0x02020202;    /* R2 */
+    *pxTopOfStack = (portSTACK_TYPE) 0x02020202;      /* R2 */
     pxTopOfStack--;
-    *pxTopOfStack = ( portSTACK_TYPE ) 0x01010101;    /* R1 */
+    *pxTopOfStack = (portSTACK_TYPE) 0x01010101;      /* R1 */
     pxTopOfStack--;
 
     /* When the task starts is will expect to find the function parameter in
     R0. */
-    *pxTopOfStack = ( portSTACK_TYPE ) pvParameters; /* R0 */
+    *pxTopOfStack = (portSTACK_TYPE) pvParameters;   /* R0 */
     pxTopOfStack--;
 
     /* The last thing onto the stack is the status register, which is set for
     system mode, with interrupts enabled. */
-    *pxTopOfStack = ( portSTACK_TYPE ) portINITIAL_SPSR;
+    *pxTopOfStack = (portSTACK_TYPE) portINITIAL_SPSR;
 
-    if ( ( ( unsigned long ) pxCode & 0x01UL ) != 0x00 ) {
+    if (((unsigned long) pxCode & 0x01UL) != 0x00) {
         /* We want the task to start in thumb mode. */
         *pxTopOfStack |= portTHUMB_MODE_BIT;
     }
@@ -181,7 +181,7 @@ portSTACK_TYPE *pxPortInitialiseStack( portSTACK_TYPE *pxTopOfStack, pdTASK_CODE
 }
 /*-----------------------------------------------------------*/
 
-portBASE_TYPE xPortStartScheduler( void )
+portBASE_TYPE xPortStartScheduler(void)
 {
     /* Start the timer that generates the tick ISR.  Interrupts are disabled
     here already. */
@@ -194,7 +194,7 @@ portBASE_TYPE xPortStartScheduler( void )
 }
 /*-----------------------------------------------------------*/
 
-void vPortEndScheduler( void )
+void vPortEndScheduler(void)
 {
     /* It is unlikely that the ARM port will require this function as there
     is nothing to return to.  */
@@ -220,12 +220,12 @@ void D_NOT(void)
 /*
  * Setup the timer 0 to generate the tick interrupts at the required frequency.
  */
-static void prvSetupTimerInterrupt( void )
+static void prvSetupTimerInterrupt(void)
 {
     volatile int i;
     unsigned long ulCompareMatch;
-    extern void ( vIRQHandler )( void );
-    extern void ( vPortYieldProcessor ) ( void );
+    extern void (vIRQHandler)(void);
+    extern void (vPortYieldProcessor)(void);
 
 
     //portDISABLE_INTERRUPTS();
@@ -235,16 +235,16 @@ static void prvSetupTimerInterrupt( void )
      * Interrupt Controller module reset */
     (*(REG32(MPU_INTC + INTCPS_SYSCONFIG))) = 0x00000002;
     while (((*(REG32(MPU_INTC + 0x14))) & 1) != 1) {} //wait for module to be OK
-    for ( i = 0; i < 2000; i++) {}
+    for (i = 0; i < 2000; i++) {}
     /* Functional clock auto-idle mode : FuncFree */
     (*(REG32(MPU_INTC + INTCPS_IDLE))) = 0x00000001;
-    for ( i = 0; i < 100; i++) {}
+    for (i = 0; i < 100; i++) {}
     (*(REG32(MPU_INTC + 0x68))) = 0xFF;
-    for ( i = 0; i < 100; i++) {}
+    for (i = 0; i < 100; i++) {}
     (*(REG32(MPU_INTC + INTCPS_ILSR68))) = 0x0C;
     (*(REG32(MPU_INTC + INTCPS_ILSR96))) = 0x0C;
     (*(REG32(MPU_INTC + INTCPS_ILSR97))) = 0x0C;
-    for ( i = 0; i < 100; i++) {}
+    for (i = 0; i < 100; i++) {}
 
 
 
@@ -259,7 +259,7 @@ static void prvSetupTimerInterrupt( void )
     (*(REG32(MPU_INTC + INTCPS_MIR_CLEAR2))) = ~(*(REG32(MPU_INTC + INTCPS_MIR2))) | 0x10;
     (*(REG32(MPU_INTC + INTCPS_MIR_CLEAR3))) = ~(*(REG32(MPU_INTC + INTCPS_MIR3))) | 0x1;
     (*(REG32(MPU_INTC + INTCPS_MIR_CLEAR3))) = ~(*(REG32(MPU_INTC + INTCPS_MIR3))) | 0x2;
-    for ( i = 0; i < 100; i++) {}
+    for (i = 0; i < 100; i++) {}
 
 
     /* Calculate the match value required for our wanted tick rate */
@@ -269,7 +269,7 @@ static void prvSetupTimerInterrupt( void )
     /* Set and enable DMTIMER2 */
     (*(REG32(CM_DPLL_REG + DMTIMER2_CLKSEL))) = 0x1;
     (*(REG32(CM_PER + CM_PER_TIMER2))) = 0x2;
-    for ( i = 0; i < 2000; i++) {
+    for (i = 0; i < 2000; i++) {
         i++;
     }
 
@@ -277,35 +277,35 @@ static void prvSetupTimerInterrupt( void )
     //(*(REG32(GPTI1 + GPTI_TIOCP_CFG))) = 0x2; // reset interface
     (*(REG32(DMTIMER2 + 0x10))) = 0x1; // reset interface
 
-    for ( i = 0; i < 100; i++) {}
+    for (i = 0; i < 100; i++) {}
     //(*(REG32(GPTI1 + GPTI_TCRR))) = 0; // initialize counter
     (*(REG32(DMTIMER2 + 0x3C))) = 0; // initialize counter
-    for ( i = 0; i < 100; i++) {}
+    for (i = 0; i < 100; i++) {}
     //(*(REG32(GPTI1 + GPTI_TMAR))) = ulCompareMatch; // load match value
     (*(REG32(DMTIMER2 + 0x4C))) = ulCompareMatch;
-    for ( i = 0; i < 100; i++) {}
+    for (i = 0; i < 100; i++) {}
     /* Clear pending matching interrupt (if any) */
     //(*(REG32(GPTI1 + GPTI_TISR))) = 0x1;
     (*(REG32(DMTIMER2 + 0x28))) = 0x1;
-    for ( i = 0; i < 100; i++) {}
+    for (i = 0; i < 100; i++) {}
     /* Enable matching interrupts */
     //(*(REG32(GPTI1 + GPTI_TIER))) = 0x1;
     (*(REG32(DMTIMER2 + 0x2C))) = 0x1;
 
     (*(REG32(DMTIMER2 + 0x40))) = 0x0; //reload value
-    for ( i = 0; i < 100; i++) {}
+    for (i = 0; i < 100; i++) {}
     /* Timer Control Register
      * bit 0 -> start
      * bit 1 -> autoreload
      * bit 6 -> compare enabled
      */
     (*(REG32(DMTIMER2 + 0x38))) = 0x43;
-    for ( i = 0; i < 100; i++) {}
+    for (i = 0; i < 100; i++) {}
     /* Reset the timer */
     //(*(REG32(GPTI1 + GPTI_TTGR))) = 0xFF;
 
     (*(REG32(DMTIMER2 + 0x44))) = 0xFF;
-    for ( i = 0; i < 100; i++) {}
+    for (i = 0; i < 100; i++) {}
 
 
 }

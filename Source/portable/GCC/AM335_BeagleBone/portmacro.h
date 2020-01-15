@@ -190,7 +190,7 @@ extern volatile unsigned portLONG ulCriticalNesting;                    \
     ( void ) pxCurrentTCB;                                                \
 }
 
-extern void vTaskSwitchContext( void );
+extern void vTaskSwitchContext(void);
 #define portYIELD_FROM_ISR() vTaskSwitchContext()
 #define portYIELD()          __asm volatile ( "SWI 0" )
 /*-----------------------------------------------------------*/
@@ -207,8 +207,8 @@ extern void vTaskSwitchContext( void );
 
 #ifdef THUMB_INTERWORK
 
-extern void vPortDisableInterruptsFromThumb( void ) __attribute__ ((naked));
-extern void vPortEnableInterruptsFromThumb( void ) __attribute__ ((naked));
+extern void vPortDisableInterruptsFromThumb(void) __attribute__((naked));
+extern void vPortEnableInterruptsFromThumb(void) __attribute__((naked));
 
 #define portDISABLE_INTERRUPTS() vPortDisableInterruptsFromThumb()
 #define portENABLE_INTERRUPTS()  vPortEnableInterruptsFromThumb()
@@ -233,8 +233,8 @@ extern void vPortEnableInterruptsFromThumb( void ) __attribute__ ((naked));
 
 #endif /* THUMB_INTERWORK */
 
-extern void vPortEnterCritical( void );
-extern void vPortExitCritical( void );
+extern void vPortEnterCritical(void);
+extern void vPortExitCritical(void);
 
 #define portENTER_CRITICAL() vPortEnterCritical();
 #define portEXIT_CRITICAL()  vPortExitCritical();

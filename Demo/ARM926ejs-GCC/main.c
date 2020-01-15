@@ -62,21 +62,21 @@ static const UBaseType_t defaultDelay = 1000;
 
 
 /* Task function - may be instantiated in multiple tasks */
-void vTaskFunction( void *pvParameters )
+void vTaskFunction(void *pvParameters)
 {
     const portCHAR* taskName;
     UBaseType_t  delay;
     paramStruct* params = (paramStruct*) pvParameters;
 
-    taskName = ( NULL == params || NULL == params->text ? defaultText : params->text );
-    delay = ( NULL == params ? defaultDelay : params->delay);
+    taskName = (NULL == params || NULL == params->text ? defaultText : params->text);
+    delay = (NULL == params ? defaultDelay : params->delay);
 
-    for ( ; ; ) {
+    for (; ;) {
         /* Print out the name of this task. */
 
         vPrintMsg(taskName);
 
-        vTaskDelay( delay / portTICK_RATE_MS );
+        vTaskDelay(delay / portTICK_RATE_MS);
     }
 
     /*
@@ -96,8 +96,8 @@ void vPeriodicTaskFunction(void* pvParameters)
     paramStruct* params = (paramStruct*) pvParameters;
     TickType_t lastWakeTime;
 
-    taskName = ( NULL == params || NULL == params->text ? defaultText : params->text );
-    delay = ( NULL == params ? defaultDelay : params->delay);
+    taskName = (NULL == params || NULL == params->text ? defaultText : params->text);
+    delay = (NULL == params ? defaultDelay : params->delay);
 
     /*
      * This variable must be initialized once.
@@ -105,7 +105,7 @@ void vPeriodicTaskFunction(void* pvParameters)
      */
     lastWakeTime = xTaskGetTickCount();
 
-    for ( ; ; ) {
+    for (; ;) {
         /* Print out the name of this task. */
 
         vPrintMsg(taskName);
@@ -115,7 +115,7 @@ void vPeriodicTaskFunction(void* pvParameters)
          * after the appropriate number of ticks), relative from the moment
          * it was last unblocked.
          */
-        vTaskDelayUntil( &lastWakeTime, delay / portTICK_RATE_MS );
+        vTaskDelayUntil(&lastWakeTime, delay / portTICK_RATE_MS);
     }
 
     /*
@@ -144,18 +144,18 @@ static const paramStruct tParam[2] = {
  */
 static void FreeRTOS_Error(const portCHAR* msg)
 {
-    if ( NULL != msg ) {
+    if (NULL != msg) {
         vDirectPrintMsg(msg);
     }
 
-    for ( ; ; );
+    for (; ;);
 }
 
 /* Startup function that creates and runs two FreeRTOS tasks */
 void main(void)
 {
     /* Init of print related tasks: */
-    if ( pdFAIL == printInit(PRINT_UART_NR) ) {
+    if (pdFAIL == printInit(PRINT_UART_NR)) {
         FreeRTOS_Error("Initialization of print failed\r\n");
     }
 
@@ -168,28 +168,28 @@ void main(void)
     vDirectPrintMsg("= = = T E S T   S T A R T E D = = =\r\n\r\n");
 
     /* Init of receiver related tasks: */
-    if ( pdFAIL == recvInit(RECV_UART_NR) ) {
+    if (pdFAIL == recvInit(RECV_UART_NR)) {
         FreeRTOS_Error("Initialization of receiver failed\r\n");
     }
 
     /* Create a print gate keeper task: */
-    if ( pdPASS != xTaskCreate(printGateKeeperTask, "gk", 128, NULL,
-                               PRIOR_PRINT_GATEKEEPR, NULL) ) {
+    if (pdPASS != xTaskCreate(printGateKeeperTask, "gk", 128, NULL,
+                              PRIOR_PRINT_GATEKEEPR, NULL)) {
         FreeRTOS_Error("Could not create a print gate keeper task\r\n");
     }
 
-    if ( pdPASS != xTaskCreate(recvTask, "recv", 128, NULL, PRIOR_RECEIVER, NULL) ) {
+    if (pdPASS != xTaskCreate(recvTask, "recv", 128, NULL, PRIOR_RECEIVER, NULL)) {
         FreeRTOS_Error("Could not create a receiver task\r\n");
     }
 
     /* And finally create two tasks: */
-    if ( pdPASS != xTaskCreate(vTaskFunction, "task1", 128, (void*) &tParam[0],
-                               PRIOR_PERIODIC, NULL) ) {
+    if (pdPASS != xTaskCreate(vTaskFunction, "task1", 128, (void*) &tParam[0],
+                              PRIOR_PERIODIC, NULL)) {
         FreeRTOS_Error("Could not create task1\r\n");
     }
 
-    if ( pdPASS != xTaskCreate(vPeriodicTaskFunction, "task2", 128, (void*) &tParam[1],
-                               PRIOR_FIX_FREQ_PERIODIC, NULL) ) {
+    if (pdPASS != xTaskCreate(vPeriodicTaskFunction, "task2", 128, (void*) &tParam[1],
+                              PRIOR_FIX_FREQ_PERIODIC, NULL)) {
         FreeRTOS_Error("Could not create task2\r\n");
     }
 
@@ -207,5 +207,5 @@ void main(void)
     FreeRTOS_Error("Could not start the scheduler!!!\r\n");
 
     /* just in case if an infinite loop is somehow omitted in FreeRTOS_Error */
-    for ( ; ; );
+    for (; ;);
 }

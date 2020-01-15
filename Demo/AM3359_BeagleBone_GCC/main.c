@@ -75,9 +75,9 @@ short channel1_flag = FALSE;
 short channel2_flag = FALSE;
 short channel3_flag = FALSE;
 
-static void prvSetupHardware( void );
+static void prvSetupHardware(void);
 
-void DATA_ABORT ( void ) __attribute__((naked));
+void DATA_ABORT(void) __attribute__((naked));
 
 /*-----------------------------------------------------------*/
 
@@ -211,7 +211,7 @@ void DATA_ABORT()
 /*
  * Starts all the other tasks, then starts the scheduler.
  */
-int main( void )
+int main(void)
 {
 
     /* Initialise the LED outputs */
@@ -233,15 +233,15 @@ int main( void )
     }*/
 
 
-    xTaskCreate(vRespTask1,  ( signed char * ) "resp1", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 3, ( xTaskHandle * ) NULL);
+    xTaskCreate(vRespTask1, (signed char *) "resp1", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 3, (xTaskHandle *) NULL);
 
     /*xTaskCreate(vRespTask2,  ( signed char * ) "resp2", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 3, ( xTaskHandle * ) NULL);
 
     xTaskCreate(vRespTask3,  ( signed char * ) "resp3", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 3, ( xTaskHandle * ) NULL);*/
 
-    xTaskCreate(vBlink,  ( signed char * ) "BLINK1", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, ( xTaskHandle * ) NULL);
-    xTaskCreate(vBlink,  ( signed char * ) "BLINK2", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, ( xTaskHandle * ) NULL);
-    xTaskCreate(vBlink,  ( signed char * ) "BLINK3", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, ( xTaskHandle * ) NULL);
+    xTaskCreate(vBlink, (signed char *) "BLINK1", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, (xTaskHandle *) NULL);
+    xTaskCreate(vBlink, (signed char *) "BLINK2", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, (xTaskHandle *) NULL);
+    xTaskCreate(vBlink, (signed char *) "BLINK3", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, (xTaskHandle *) NULL);
 
     vTaskStartScheduler();
 
@@ -250,7 +250,7 @@ int main( void )
 
 /*-----------------------------------------------------------*/
 
-static void prvSetupHardware( void )
+static void prvSetupHardware(void)
 {
 
     /* Initialize GPIOs */

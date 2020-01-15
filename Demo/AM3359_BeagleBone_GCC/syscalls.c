@@ -42,7 +42,7 @@
 
 /***************************************************************************/
 
-int _read_r (struct _reent *r, int file, char * ptr, int len)
+int _read_r(struct _reent *r, int file, char * ptr, int len)
 {
     r = r;
     file = file;
@@ -55,7 +55,7 @@ int _read_r (struct _reent *r, int file, char * ptr, int len)
 
 /***************************************************************************/
 
-int _lseek_r (struct _reent *r, int file, int ptr, int dir)
+int _lseek_r(struct _reent *r, int file, int ptr, int dir)
 {
     r = r;
     file = file;
@@ -67,7 +67,7 @@ int _lseek_r (struct _reent *r, int file, int ptr, int dir)
 
 /***************************************************************************/
 
-int _write_r (struct _reent *r, int file, char * ptr, int len)
+int _write_r(struct _reent *r, int file, char * ptr, int len)
 {
     r = r;
     file = file;
@@ -91,7 +91,7 @@ int _write_r (struct _reent *r, int file, char * ptr, int len)
 
 /***************************************************************************/
 
-int _close_r (struct _reent *r, int file)
+int _close_r(struct _reent *r, int file)
 {
     return 0;
 }
@@ -99,11 +99,11 @@ int _close_r (struct _reent *r, int file)
 /***************************************************************************/
 
 /* Register name faking - works in collusion with the linker.  */
-register char * stack_ptr asm ("sp");
+register char * stack_ptr asm("sp");
 
-caddr_t _sbrk_r (struct _reent *r, int incr)
+caddr_t _sbrk_r(struct _reent *r, int incr)
 {
-    extern char   end asm ("end"); /* Defined by the linker.  */
+    extern char   end asm("end");  /* Defined by the linker.  */
     static char * heap_end;
     char *        prev_heap_end;
 
@@ -117,11 +117,11 @@ caddr_t _sbrk_r (struct _reent *r, int incr)
         /* Some of the libstdc++-v3 tests rely upon detecting
           out of memory errors, so do not abort here.  */
 #if 0
-        extern void abort (void);
+        extern void abort(void);
 
-        _write (1, "_sbrk: Heap and stack collision\n", 32);
+        _write(1, "_sbrk: Heap and stack collision\n", 32);
 
-        abort ();
+        abort();
 #else
         errno = ENOMEM;
         return (caddr_t) -1;
@@ -135,12 +135,12 @@ caddr_t _sbrk_r (struct _reent *r, int incr)
 
 /***************************************************************************/
 
-int _fstat_r (struct _reent *r, int file, struct stat * st)
+int _fstat_r(struct _reent *r, int file, struct stat * st)
 {
     r = r;
     file = file;
 
-    memset (st, 0, sizeof (* st));
+    memset(st, 0, sizeof(* st));
     st->st_mode = S_IFCHR;
     return 0;
 }

@@ -45,7 +45,7 @@
  */
 static inline size_t minval(size_t x, size_t y)
 {
-    return ( x <= y ? x : y );
+    return (x <= y ? x : y);
 }
 
 
@@ -61,13 +61,13 @@ static inline size_t minval(size_t x, size_t y)
  *
  * @return 'ptr' is returned
  */
-void* memset(void* ptr, int value, size_t num )
+void* memset(void* ptr, int value, size_t num)
 {
     unsigned char* p = (unsigned char*) ptr;
     size_t n = num;
 
     /* sanity check */
-    if ( NULL == p ) {
+    if (NULL == p) {
         goto endf;
     }
 
@@ -75,7 +75,7 @@ void* memset(void* ptr, int value, size_t num )
      * If destination block exceeds the range of 'size_t',
      * decrease 'num' accordingly.
      */
-    if ( num > (size_t) ((unsigned char*) SIZE_T_MAX - p) ) {
+    if (num > (size_t)((unsigned char*) SIZE_T_MAX - p)) {
         n = (unsigned char*) SIZE_T_MAX - p;
         /* TODO or maybe just goto endf???? */
     }
@@ -113,19 +113,19 @@ endf:
  *
  * @return 'destination' is returned or NULL if any parameter equals NULL
  */
-void* memcpy(void* destination, const void* source, size_t num )
+void* memcpy(void* destination, const void* source, size_t num)
 {
     unsigned char* srcptr = (unsigned char*) source;
     unsigned char* destptr = (unsigned char*) destination;
     size_t n = num;
 
     /* sanity check */
-    if ( NULL == srcptr || NULL == destptr ) {
+    if (NULL == srcptr || NULL == destptr) {
         return NULL;
     }
 
     /* Nothing to do if attempting to copy to itself: */
-    if ( srcptr == destptr ) {
+    if (srcptr == destptr) {
         return destination;
     }
 
@@ -133,14 +133,14 @@ void* memcpy(void* destination, const void* source, size_t num )
      * If any block exceeds the range of 'size_t',
      * decrease 'num' accordingly.
      */
-    if ( num > (size_t) ((unsigned char*) SIZE_T_MAX - destptr) ||
-            num > (size_t) ((unsigned char*) SIZE_T_MAX - srcptr) ) {
+    if (num > (size_t)((unsigned char*) SIZE_T_MAX - destptr) ||
+            num > (size_t)((unsigned char*) SIZE_T_MAX - srcptr)) {
         n = minval((unsigned char*) SIZE_T_MAX - destptr,
                    (unsigned char*) SIZE_T_MAX - srcptr);
         /* TODO or maybe just return destination? */
     }
 
-    if ( destptr < srcptr || destptr >= (srcptr + n) ) {
+    if (destptr < srcptr || destptr >= (srcptr + n)) {
         /*
          * If blocks do not overlap or or backwards copy is requested,
          * it is safe to copy the source block from begin to end.
@@ -181,17 +181,17 @@ void* memcpy(void* destination, const void* source, size_t num )
  *
  * @return 'destination' is returned or NULL if any parameter equals NULL
  */
-char* strcpy (char* destination, const char* source)
+char* strcpy(char* destination, const char* source)
 {
     const char* srcptr = source;
     char* destptr = destination;
 
     /* sanity check */
-    if ( NULL == destptr || NULL == srcptr ) {
+    if (NULL == destptr || NULL == srcptr) {
         return NULL;
     }
 
-    while ( '\0' != *srcptr ) {
+    while ('\0' != *srcptr) {
         *destptr++ = *srcptr++;
     }
 

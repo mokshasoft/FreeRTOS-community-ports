@@ -69,7 +69,7 @@ static uint16_t bufCntr = 0;
 static uint16_t bufPos = 0;
 
 /* UART number: */
-static uint8_t recvUartNr = ( uint8_t ) -1;
+static uint8_t recvUartNr = (uint8_t) -1;
 
 /* A queue for received characters, not processed yet */
 static QueueHandle_t recvQueue;
@@ -91,12 +91,12 @@ int16_t recvInit(uint8_t uart_nr)
 {
     /* Obtain the UART's IRQ from BSP */
     const uint8_t uartIrqs[BSP_NR_UARTS] = BSP_UART_IRQS;
-    const uint8_t irq = ( uart_nr < BSP_NR_UARTS ?
-                          uartIrqs[uart_nr] :
-                          (uint8_t) -1 );
+    const uint8_t irq = (uart_nr < BSP_NR_UARTS ?
+                         uartIrqs[uart_nr] :
+                         (uint8_t) -1);
     uint16_t i;
 
-    for ( i = 0; i < RECV_BUFFER_SIZE; ++i ) {
+    for (i = 0; i < RECV_BUFFER_SIZE; ++i) {
         memset((void*) buf[i], '\0', RECV_TOTAL_BUFFER_LEN);
         strcpy(buf[i], MSG_TEXT);
     }
@@ -105,7 +105,7 @@ int16_t recvInit(uint8_t uart_nr)
     bufPos = 0;
 
     /* Check if UART number is valid */
-    if ( uart_nr >= BSP_NR_UARTS ) {
+    if (uart_nr >= BSP_NR_UARTS) {
         return pdFAIL;
     }
 
@@ -113,12 +113,12 @@ int16_t recvInit(uint8_t uart_nr)
 
     /* Create and assert a queue for received characters */
     recvQueue = xQueueCreate(RECV_QUEUE_SIZE, sizeof(portCHAR));
-    if ( 0 == recvQueue ) {
+    if (0 == recvQueue) {
         return pdFAIL;
     }
 
     /* Attempt to register UART's IRQ on VIC */
-    if ( pic_registerIrq(irq, &recvIsrHandler, 50) < 0 ) {
+    if (pic_registerIrq(irq, &recvIsrHandler, 50) < 0) {
         return pdFAIL;
     }
 
@@ -167,7 +167,7 @@ void recvTask(void* params)
 {
     portCHAR ch;
 
-    for ( ; ; ) {
+    for (; ;) {
         /* The task is blocked until something appears in the queue */
         xQueueReceive(recvQueue, (void*) &ch, portMAX_DELAY);
 
@@ -254,7 +254,7 @@ void recvTask(void* params)
         case '/' :
         case '.' :
         case ',' : {
-            if ( bufPos < RECV_BUFFER_LEN ) {
+            if (bufPos < RECV_BUFFER_LEN) {
                 /* If the buffer is not full yet, append the character */
                 buf[bufCntr][MSG_OFFSET + bufPos] = ch;
                 /* and increase the position index: */
@@ -270,7 +270,7 @@ void recvTask(void* params)
              * If the buffer is not empty, decrease the position index,
              * i.e. "delete" the last character
              */
-            if ( bufPos > 0 ) {
+            if (bufPos > 0) {
                 --bufPos;
             }
 
