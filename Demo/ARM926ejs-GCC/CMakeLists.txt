@@ -16,6 +16,7 @@ set(CMAKE_C_FLAGS "\
     -c \
     -mcpu=arm926ej-s \
     -nostdlib \
+    -Wno-main-return-type \
     -Wall -Wextra -Werror"
 )
 
