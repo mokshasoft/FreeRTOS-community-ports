@@ -33,7 +33,10 @@ set(APP_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 # Use custom linking
 set(LINKER_SCRIPT ${APP_DIR}/omap3-ram.ld)
 set(CMAKE_EXE_LINKER_FLAGS
-    "${CMAKE_EXE_LINKER_FLAGS} -T ${LINKER_SCRIPT}")
+    "${CMAKE_EXE_LINKER_FLAGS} -T ${LINKER_SCRIPT} \
+    -u __aeabi_uidiv -u __aeabi_idiv -u __aeabi_uidivmod \
+    --gc-sections \
+    -lc -lgcc -L ${LIBGCC} -L ${LIBC}")
 
 # Files in project
 file(GLOB static
