@@ -16,8 +16,8 @@ set(CMAKE_C_FLAGS "\
     -c \
     -mcpu=arm926ej-s \
     -nostdlib \
-    -Wno-main-return-type \
-    -Wall -Wextra -Werror"
+    -Wall -Wextra -Werror \
+    -Wno-unused-label -Wno-unused-parameter -Wno-sign-compare"
 )
 
 # Set source directory variables
