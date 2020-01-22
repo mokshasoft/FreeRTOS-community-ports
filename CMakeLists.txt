@@ -15,5 +15,6 @@ include(cmake/qemu.cmake)
 
 # Add demos
 
+add_subdirectory(Libraries/idris-rts)
 add_subdirectory(Demo/AM3359_BeagleBone_GCC)
 add_subdirectory(Demo/ARM926ejs-GCC)
