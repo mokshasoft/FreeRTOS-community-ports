@@ -59,14 +59,42 @@ file(GLOB static
 # Tell CMake to treat this file as a C-file
 set_property(SOURCE ${APP_DIR}/startup.s PROPERTY LANGUAGE C)
 
-# Create target
-add_executable(${APP} EXCLUDE_FROM_ALL ${static})
-generate_binary(${APP})
+# Idris RTS
 
-target_link_libraries(
-    ${APP}
-    idris-rts-bare-metal
+set(IDRIS_RTS ${CMAKE_SOURCE_DIR}/Libraries/idris-rts)
+file(GLOB idris_rts_src
+    ${IDRIS_RTS}/rts/idris_rts.c
+    ${IDRIS_RTS}/rts/idris_heap.c
+    ${IDRIS_RTS}/rts/idris_gc.c
+    ${IDRIS_RTS}/rts/idris_gmp.c
+    ${IDRIS_RTS}/rts/idris_bitstring.c
+    ${IDRIS_RTS}/rts/idris_utf8.c
+    ${IDRIS_RTS}/rts/mini-gmp.c
+    ${IDRIS_RTS}/rts/bare-metal/idris_main.c
 )
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
+    -W -Wall \
+    -Wno-unused-parameter \
+    -Wno-sign-compare \
+    -Wno-unused-variable \
+    -Wno-empty-body \
+    -Wno-maybe-uninitialized \
+    -Wno-unused-but-set-variable \
+    -DIDRIS_TARGET_OS=\"\\\"bare-metal\\\"\" \
+    -DBARE_METAL"
+)
+
+execute_process(
+    COMMAND ${CMAKE_C_COMPILER} -dumpmachine
+    OUTPUT_VARIABLE MACHINE
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DIDRIS_TARGET_TRIPLE=\"\\\"${MACHINE}\\\"\"")
+
+# Create target
+add_executable(${APP} EXCLUDE_FROM_ALL ${static} ${idris_rts_src})
+generate_binary(${APP})
 
 # Header files
 target_include_directories(${APP} PUBLIC
@@ -74,4 +102,5 @@ target_include_directories(${APP} PUBLIC
     ${FREERTOS_PORT_DIR}
     ${DRIVERS_DIR}/include
     ${APP_DIR}
+    ${IDRIS_RTS}/rts
 )
