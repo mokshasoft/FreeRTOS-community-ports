@@ -50,7 +50,7 @@ file(GLOB static
     # App
     ${APP_DIR}/startup.s
     ${APP_DIR}/init.c
-    ${APP_DIR}/main.c
+    ${APP_DIR}/idr-main.c
     ${APP_DIR}/print.c
     ${APP_DIR}/receive.c
     ${APP_DIR}/nostdlib.c
@@ -62,6 +62,11 @@ set_property(SOURCE ${APP_DIR}/startup.s PROPERTY LANGUAGE C)
 # Create target
 add_executable(${APP} EXCLUDE_FROM_ALL ${static})
 generate_binary(${APP})
+
+target_link_libraries(
+    ${APP}
+    idris-rts-bare-metal
+)
 
 # Header files
 target_include_directories(${APP} PUBLIC
