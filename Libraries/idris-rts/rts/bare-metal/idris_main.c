@@ -2,6 +2,7 @@
 #include "idris_opts.h"
 #include "idris_rts.h"
 #include "idris_stats.h"
+#include "print.h"
 
 void _idris__123_runMain_95_0_125_(VM* vm, VAL* oldbase);
 
@@ -12,6 +13,7 @@ RTSOpts opts = {
 };
 
 int main() {
+    vDirectPrintMsg("= = = T E S T idris  S T A R T E D = = =\r\n\r\n");
     VM* vm = init_vm(opts.max_stack_size, opts.init_heap_size, 1);
     init_gmpalloc();
     init_nullaries();
