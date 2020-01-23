@@ -14,6 +14,7 @@ project(${APP} C)
 # GCC flags
 set(CMAKE_C_FLAGS "\
     -c \
+    -g \
     -mcpu=arm926ej-s \
     -nostdlib \
     -Wall -Wextra -Werror \
