@@ -13,7 +13,6 @@ RTSOpts opts = {
 };
 
 int main() {
-    vDirectPrintMsg("= = = T E S T idris  S T A R T E D = = =\r\n\r\n");
     VM* vm = init_vm(opts.max_stack_size, opts.init_heap_size, 1);
     init_gmpalloc();
     init_nullaries();

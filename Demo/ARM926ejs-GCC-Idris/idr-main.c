@@ -6,6 +6,7 @@
 void* _idris_assert_95_unreachable(VM*, VAL*);
 void* _idris_call_95__95_IO(VM*, VAL*);
 void* _idris_idris_95_crash(VM*, VAL*);
+void* _idris_io_95_bind(VM*, VAL*);
 void* _idris_Main_46_main(VM*, VAL*);
 void* _idris_mkForeignPrim(VM*, VAL*);
 void* _idris_prim_95__95_asPtr(VM*, VAL*);
@@ -37,6 +38,8 @@ void* _idris_prim_95__95_stdin(VM*, VAL*);
 void* _idris_prim_95__95_stdout(VM*, VAL*);
 void* _idris_prim_95__95_vm(VM*, VAL*);
 void* _idris_prim_95__95_writeFile(VM*, VAL*);
+void* _idris_prim_95_io_95_bind(VM*, VAL*);
+void* _idris_Utils_46_printInit(VM*, VAL*);
 void* _idris_run_95__95_IO(VM*, VAL*);
 void* _idris_unsafePerformPrimIO(VM*, VAL*);
 void* _idris_Utils_46_vDirectPrintMsg(VM*, VAL*);
@@ -44,6 +47,7 @@ void* _idris__123_APPLY_95_0_125_(VM*, VAL*);
 void* _idris__123_APPLY2_95_0_125_(VM*, VAL*);
 void* _idris__123_EVAL_95_0_125_(VM*, VAL*);
 void* _idris__123_runMain_95_0_125_(VM*, VAL*);
+void* _idris_io_95_bind_95_IO_95__95_idr_95_108_95_34_95_108_95_36_95_case(VM*, VAL*);
 void* _idris_assert_95_unreachable(VM* vm, VAL* oldbase) {
     INITFRAME;
 loop:
@@ -78,17 +82,56 @@ loop:
     REBASE;
 }
 
-void* _idris_Main_46_main(VM* vm, VAL* oldbase) {
+void* _idris_io_95_bind(VM* vm, VAL* oldbase) {
     INITFRAME;
 loop:
     RESERVE(1);
     ADDTOP(1);
-    LOC(0) = MKSTR(vm, "Hello, Idris Unikernel""\x0a""");
-    allocCon(REG1, vm, 65652, 1, 0);
-    SETARG(REG1, 0, LOC(0)); 
-    RVAL = REG1;
-    TOPBASE(0);
-    REBASE;
+    RESERVE(2);
+    TOP(0) = LOC(3);
+    TOP(1) = LOC(5);
+    STOREOLD;
+    BASETOP(0);
+    ADDTOP(2);
+    CALL(_idris__123_APPLY_95_0_125_);
+    LOC(6) = RVAL;
+    RESERVE(2);
+    TOP(0) = LOC(4);
+    TOP(1) = LOC(6);
+    STOREOLD;
+    BASETOP(0);
+    ADDTOP(2);
+    CALL(_idris__123_APPLY_95_0_125_);
+    LOC(6) = RVAL;
+    RESERVE(2);
+    TOP(0) = LOC(6);
+    TOP(1) = LOC(5);
+    SLIDE(vm, 2);
+    TOPBASE(2);
+    TAILCALL(_idris__123_APPLY_95_0_125_);
+}
+
+void* _idris_Main_46_main(VM* vm, VAL* oldbase) {
+    INITFRAME;
+loop:
+    RESERVE(2);
+    ADDTOP(2);
+    LOC(1) = MKINT(0);
+    RESERVE(2);
+    TOP(0) = LOC(1);
+    TOP(1) = LOC(0);
+    STOREOLD;
+    BASETOP(0);
+    ADDTOP(2);
+    CALL(_idris_Utils_46_printInit);
+    LOC(1) = RVAL;
+    LOC(2) = MKSTR(vm, "Hello, Idris Unikernel""\x0a""");
+    RESERVE(2);
+    TOP(0) = LOC(2);
+    TOP(1) = LOC(0);
+    SLIDE(vm, 2);
+    TOPBASE(2);
+    TAILCALL(_idris_Utils_46_vDirectPrintMsg);
 }
 
 void* _idris_mkForeignPrim(VM* vm, VAL* oldbase) {
@@ -391,6 +434,29 @@ loop:
     REBASE;
 }
 
+void* _idris_prim_95_io_95_bind(VM* vm, VAL* oldbase) {
+    INITFRAME;
+loop:
+    RESERVE(1);
+    ADDTOP(1);
+    RESERVE(2);
+    TOP(0) = LOC(3);
+    TOP(1) = LOC(2);
+    SLIDE(vm, 2);
+    TOPBASE(2);
+    TAILCALL(_idris__123_APPLY_95_0_125_);
+}
+
+void* _idris_Utils_46_printInit(VM* vm, VAL* oldbase) {
+    INITFRAME;
+loop:
+    RESERVE(1);
+    ADDTOP(1);
+    RVAL = MKINT((i_int)(printInit(GETINT(LOC(0)))));
+    TOPBASE(0);
+    REBASE;
+}
+
 void* _idris_run_95__95_IO(VM* vm, VAL* oldbase) {
     INITFRAME;
 loop:
@@ -430,22 +496,9 @@ void* _idris__123_APPLY_95_0_125_(VM* vm, VAL* oldbase) {
 loop:
     RESERVE(1);
     ADDTOP(1);
-    switch(TAG(LOC(0))) {
-    case 65652:
-        PROJECT(vm, LOC(0), 2, 1);
-        RESERVE(2);
-        TOP(0) = LOC(2);
-        TOP(1) = LOC(1);
-        SLIDE(vm, 2);
-        TOPBASE(2);
-        TAILCALL(_idris_Utils_46_vDirectPrintMsg);
-        break;
-    default:
-        RVAL = NULL;
-        TOPBASE(0);
-        REBASE;
-        break;
-    }
+    RVAL = NULL;
+    TOPBASE(0);
+    REBASE;
 }
 
 void* _idris__123_APPLY2_95_0_125_(VM* vm, VAL* oldbase) {
@@ -475,13 +528,23 @@ loop:
 void* _idris__123_runMain_95_0_125_(VM* vm, VAL* oldbase) {
     INITFRAME;
 loop:
-    RESERVE(2);
-    ADDTOP(2);
-    LOC(0) = MKSTR(vm, "Hello, Idris Unikernel""\x0a""");
+    RESERVE(3);
+    ADDTOP(3);
+    LOC(0) = MKINT(0);
     LOC(1) = NULL_CON(0);
     RESERVE(2);
     TOP(0) = LOC(0);
     TOP(1) = LOC(1);
+    STOREOLD;
+    BASETOP(0);
+    ADDTOP(2);
+    CALL(_idris_Utils_46_printInit);
+    LOC(0) = RVAL;
+    LOC(1) = MKSTR(vm, "Hello, Idris Unikernel""\x0a""");
+    LOC(2) = NULL_CON(0);
+    RESERVE(2);
+    TOP(0) = LOC(1);
+    TOP(1) = LOC(2);
     STOREOLD;
     BASETOP(0);
     ADDTOP(2);
@@ -492,5 +555,18 @@ loop:
     SLIDE(vm, 1);
     TOPBASE(1);
     TAILCALL(_idris__123_EVAL_95_0_125_);
+}
+
+void* _idris_io_95_bind_95_IO_95__95_idr_95_108_95_34_95_108_95_36_95_case(VM* vm, VAL* oldbase) {
+    INITFRAME;
+loop:
+    RESERVE(1);
+    ADDTOP(1);
+    RESERVE(2);
+    TOP(0) = LOC(7);
+    TOP(1) = LOC(5);
+    SLIDE(vm, 2);
+    TOPBASE(2);
+    TAILCALL(_idris__123_APPLY_95_0_125_);
 }
 
