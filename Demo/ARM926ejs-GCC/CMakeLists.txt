@@ -62,6 +62,7 @@ set_property(SOURCE ${APP_DIR}/startup.s PROPERTY LANGUAGE C)
 # Create target
 add_executable(${APP} EXCLUDE_FROM_ALL ${static})
 generate_binary(${APP})
+create_qemu_target(versatilepb ${APP})
 
 # Header files
 target_include_directories(${APP} PUBLIC
