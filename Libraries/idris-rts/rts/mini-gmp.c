@@ -274,6 +274,7 @@ gmp_default_alloc (size_t size)
 static void *
 gmp_default_realloc (void *old, size_t old_size, size_t new_size)
 {
+#ifndef BARE_METAL
   void * p;
 
   p = realloc (old, new_size);
@@ -282,6 +283,9 @@ gmp_default_realloc (void *old, size_t old_size, size_t new_size)
     gmp_die("gmp_default_realloc: Virtual memory exhausted.");
 
   return p;
+#else
+  return NULL;
+#endif // BARE_METAL
 }
 
 static void

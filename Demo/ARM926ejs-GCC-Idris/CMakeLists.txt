@@ -17,8 +17,19 @@ set(CMAKE_C_FLAGS "\
     -mcpu=arm926ej-s \
     -nostdlib \
     -Wall -Wextra -Werror \
+    -fdata-sections -ffunction-sections \
     -Wno-unused-label -Wno-unused-parameter -Wno-sign-compare"
 )
+
+# Use FreeRTOS's malloc implementation
+add_compile_definitions(malloc=pvPortMalloc)
+add_compile_definitions(free=vPortFree)
+
+# Add #define's for stdin, stdout and stderr for idr-main.c to compile.
+# These functions are not used and will be removed by the linker.
+add_compile_definitions(stdin=0)
+add_compile_definitions(stdout=1)
+add_compile_definitions(stderr=2)
 
 # Set source directory variables
 set(FREERTOS_DIR ${CMAKE_SOURCE_DIR}/Source)
@@ -29,8 +40,11 @@ set(APP_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Use custom linking
 set(LINKER_SCRIPT ${APP_DIR}/qemu.ld)
-set(CMAKE_EXE_LINKER_FLAGS
-    "${CMAKE_EXE_LINKER_FLAGS} -T ${LINKER_SCRIPT}")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} \
+    -T ${LINKER_SCRIPT} \
+    --gc-sections \
+    -lc -lgcc -L ${LIBGCC} -L ${LIBC}"
+)
 
 # Files in project
 file(GLOB static
@@ -39,7 +53,7 @@ file(GLOB static
     ${FREERTOS_DIR}/list.c
     ${FREERTOS_DIR}/tasks.c
     # FreeRTOS heap
-    ${FREERTOS_MEMMANG_DIR}/heap_1.c
+    ${FREERTOS_MEMMANG_DIR}/heap_4.c
     # FreeRTOS port
     ${FREERTOS_PORT_DIR}/port.c
     ${FREERTOS_PORT_DIR}/portISR.c
@@ -81,6 +95,8 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
     -Wno-empty-body \
     -Wno-maybe-uninitialized \
     -Wno-unused-but-set-variable \
+    -Wno-implicit-function-declaration \
+    -Wno-int-conversion \
     -DIDRIS_TARGET_OS=\"\\\"bare-metal\\\"\" \
     -DBARE_METAL"
 )
