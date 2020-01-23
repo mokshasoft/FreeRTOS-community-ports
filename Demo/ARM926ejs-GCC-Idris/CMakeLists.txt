@@ -112,6 +112,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DIDRIS_TARGET_TRIPLE=\"\\\"${MACHINE}\\\"\"
 # Create target
 add_executable(${APP} EXCLUDE_FROM_ALL ${static} ${idris_rts_src})
 generate_binary(${APP})
+create_qemu_target(versatilepb ${APP})
 
 # Header files
 target_include_directories(${APP} PUBLIC
