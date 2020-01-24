@@ -8,8 +8,20 @@
 
 cmake_minimum_required(VERSION 3.7.2)
 
+# Include Idris CMake functions
+include(${CMAKE_SOURCE_DIR}/cmake/Idris.cmake)
+
 set(APP demo-ARM926ejs-Idris)
 project(${APP} C)
+
+# Files in project
+file(GLOB idris_src
+    ${APP_DIR}/*.idr
+)
+
+test_idris_version(1.3.1)
+
+idris_tc_files(${APP}-main.c ${idris_src})
 
 # GCC flags
 set(CMAKE_C_FLAGS "\
@@ -112,6 +124,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DIDRIS_TARGET_TRIPLE=\"\\\"${MACHINE}\\\"\"
 
 # Create target
 add_executable(${APP} EXCLUDE_FROM_ALL ${static} ${idris_rts_src})
+add_dependencies(${APP} ${APP}-main.c)
 generate_binary(${APP})
 create_qemu_target(versatilepb ${APP})
 
