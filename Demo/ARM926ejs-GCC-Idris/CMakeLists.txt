@@ -31,7 +31,7 @@ set(CMAKE_C_FLAGS "\
 add_compile_definitions(malloc=pvPortMalloc)
 add_compile_definitions(free=vPortFree)
 
-# Add #define's for stdin, stdout and stderr for idr-main.c to compile.
+# Add #define's for stdin, stdout and stderr for ${APP}-main.c to compile.
 # These functions are not used and will be removed by the linker.
 add_compile_definitions(stdin=0)
 add_compile_definitions(stdout=1)
