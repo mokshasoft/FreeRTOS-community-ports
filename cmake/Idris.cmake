@@ -24,10 +24,10 @@ function(test_idris_version version)
 endfunction()
 
 # Transcompile Idris files to C
-function(idris_tc_files target files)
+function(idris_tc_files target idris_main)
     add_custom_target(${target} DEPENDS ${files})
     add_custom_command(
         TARGET ${target}
-	COMMAND idris --codegen C --codegenonly -o ${target} ${files}
+	COMMAND idris -i ${ARGN} --codegen C --codegenonly -o ${target} ${idris_main}
     )
 endfunction()

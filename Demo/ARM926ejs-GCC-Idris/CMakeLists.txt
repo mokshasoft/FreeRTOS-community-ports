@@ -44,11 +44,12 @@ set(FREERTOS_PORT_DIR ${CMAKE_SOURCE_DIR}/Source/portable/GCC/ARM926EJ-S)
 set(DRIVERS_DIR ${CMAKE_SOURCE_DIR}/Source/portable/GCC/ARM926EJ-S/drivers)
 set(APP_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-# Idris files
-file(GLOB idris_src
-    ${APP_DIR}/*.idr
+# Idris Main
+file(GLOB idris_main
+    ${APP_DIR}/Main.idr
 )
-idris_tc_files(${APP}-main.c ${idris_src})
+set(idris_src_paths ${APP_DIR})
+idris_tc_files(${APP}-main.c ${idris_main} ${idris_src_paths})
 
 # Use custom linking
 set(LINKER_SCRIPT ${APP_DIR}/qemu.ld)
