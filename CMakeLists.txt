@@ -17,3 +17,4 @@ include(cmake/qemu.cmake)
 
 add_subdirectory(Demo/AM3359_BeagleBone_GCC)
 add_subdirectory(Demo/ARM926ejs-GCC)
+add_subdirectory(Demo/ARM926ejs-GCC-Idris)
