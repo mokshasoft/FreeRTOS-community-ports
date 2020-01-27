@@ -80,8 +80,8 @@ file(GLOB static
     ${APP_DIR}/print.c
     ${APP_DIR}/receive.c
     ${APP_DIR}/nostdlib.c
-    # Idris app
-    ${APP}-main.c
+    # Idris app transcompiled to C
+    ${CMAKE_CURRENT_BINARY_DIR}/${APP}-main.c
 )
 
 # Tell CMake to treat this file as a C-file
