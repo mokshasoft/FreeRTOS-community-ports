@@ -8,6 +8,7 @@ See "LICENSE_BSD2.txt" for details.
 
 module Main
 
+import Process
 import Utils
 
 main : IO ()
