@@ -3,6 +3,8 @@
 #include "idris_rts.h"
 #include "idris_stats.h"
 #include "print.h"
+#include <FreeRTOS.h>
+#include <task.h>
 
 void _idris__123_runMain_95_0_125_(VM* vm, VAL* oldbase);
 
@@ -12,21 +14,38 @@ RTSOpts opts = {
     .show_summary   = 0
 };
 
-int main() {
+static void uartLog(const char* msg) {
+    vDirectPrintMsg(msg);
+}
+
+static void halt() {
+    for (; ;);
+}
+
+void vRootThread(void* pvParameters) {
     VM* vm = init_vm(opts.max_stack_size, opts.init_heap_size, 1);
     init_gmpalloc();
     init_nullaries();
-
     _idris__123_runMain_95_0_125_(vm, NULL);
+}
 
-#ifdef IDRIS_DEBUG
-    if (opts.show_summary) {
-        idris_gcInfo(vm, 1);
+int main() {
+    // Init print
+    if (pdFAIL == printInit(0)) {
+        uartLog("Init print failed\r\n");
+        halt();
     }
-#endif
 
-    // Remove call to terminate since it crashes the application during a free
-    //Stats stats = terminate(vm);
+    // Create root thread
+    if (pdPASS != xTaskCreate(vRootThread, "root", 2000, NULL, 0, NULL)) {
+        uartLog("Failed to create root thread\r\n");
+        halt();
+    }
 
+    // Start the FreeRTOS scheduler
+    vTaskStartScheduler();
+
+    // Will not get here unless there is insufficient RAM
+    uartLog("will not get here\r\n");
     return EXIT_SUCCESS;
 }

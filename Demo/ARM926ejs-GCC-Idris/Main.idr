@@ -12,5 +12,4 @@ import Utils
 
 main : IO ()
 main = do
-    _ <- printInit 0
     vDirectPrintMsg "Hello, Idris Unikernel\n"
