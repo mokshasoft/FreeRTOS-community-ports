@@ -1131,6 +1131,10 @@ void idris_freeMsg(Msg* msg) {
     free(msg);
 }
 
+int isNull(void* ptr) {
+    return ptr==NULL;
+}
+
 int idris_errno(void) {
     return errno;
 }
