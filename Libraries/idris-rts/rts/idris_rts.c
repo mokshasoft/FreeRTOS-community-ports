@@ -826,7 +826,6 @@ void runThread(void* arg) {
     //    aggregate_stats(&(td->vm->stats), &stats);
 }
 
-void* vmThread(VM* callvm, func f, VAL arg) __attribute__((used));
 void* vmThread(VM* callvm, func f, VAL arg) {
     VM* vm = init_vm(callvm->stack_max - callvm->valstack, callvm->heap.size,
                      callvm->max_threads);
