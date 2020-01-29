@@ -8,9 +8,15 @@ See "LICENSE_BSD2.txt" for details.
 
 module Main
 
+import System.Concurrency.Channels
 import Process
 import Utils
 
+printer : IO ()
+printer = do
+    vDirectPrintMsg "Printing from printer..\n"
+
 main : IO ()
 main = do
+    Just pidPrinter <- spawn printer | Nothing => vDirectPrintMsg "spawning printer failed"
     vDirectPrintMsg "Hello, Idris Unikernel\n"
