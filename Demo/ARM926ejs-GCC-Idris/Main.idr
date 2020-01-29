@@ -9,7 +9,6 @@ See "LICENSE_BSD2.txt" for details.
 module Main
 
 import System.Concurrency.Channels
-import Process
 import Utils
 
 printer : IO ()
