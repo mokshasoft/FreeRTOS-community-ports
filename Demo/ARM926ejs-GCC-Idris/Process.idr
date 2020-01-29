@@ -11,6 +11,12 @@ module Process
 %access public export
 %default total
 
+pdPASS : Int
+pdPASS = 1
+
+pdFAIL : Int
+pdFAIL = 0
+
 Task : Type
 Task = Int
 
