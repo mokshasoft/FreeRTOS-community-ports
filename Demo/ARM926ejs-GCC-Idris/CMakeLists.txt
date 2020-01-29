@@ -74,6 +74,8 @@ file(GLOB static
     ${DRIVERS_DIR}/timer.c
     ${DRIVERS_DIR}/interrupt.c
     ${DRIVERS_DIR}/uart.c
+    # FreeRTOS Idris wrapper
+    ${APP_DIR}/wrapper.c
     # App base
     ${APP_DIR}/startup.s
     ${APP_DIR}/init.c

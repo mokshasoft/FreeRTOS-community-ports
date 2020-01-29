@@ -15,6 +15,8 @@ import Utils
 printer : IO ()
 printer = do
     vDirectPrintMsg "Printing from printer..\n"
+    vTaskDelay 2000
+    printer
 
 main : IO ()
 main = do
