@@ -13,6 +13,8 @@
 #ifndef BARE_METAL
 #include "getline.h"
 #endif // BARE_METAL
+#include <FreeRTOS.h>
+#include <task.h>
 
 #define STATIC_ASSERT(COND,MSG) typedef char static_assertion_##MSG[(COND)?1:-1]
 
@@ -800,14 +802,13 @@ VAL idris_systemInfo(VM* vm, VAL index) {
     return MKSTR(vm, "");
 }
 
-#ifdef HAS_PTHREAD
 typedef struct {
     VM* vm; // thread's VM
     func fn;
     VAL arg;
 } ThreadData;
 
-void* runThread(void* arg) {
+void runThread(void* arg) {
     ThreadData* td = (ThreadData*)arg;
     VM* vm = td->vm;
     func fn = td->fn;
@@ -823,21 +824,14 @@ void* runThread(void* arg) {
     //    Stats stats =
     terminate(vm);
     //    aggregate_stats(&(td->vm->stats), &stats);
-    return NULL;
 }
 
+void* vmThread(VM* callvm, func f, VAL arg) __attribute__((used));
 void* vmThread(VM* callvm, func f, VAL arg) {
     VM* vm = init_vm(callvm->stack_max - callvm->valstack, callvm->heap.size,
                      callvm->max_threads);
     vm->processes=1; // since it can send and receive messages
     vm->creator = callvm;
-    pthread_t t;
-    pthread_attr_t attr;
-//    size_t stacksize;
-
-    pthread_attr_init(&attr);
-//    pthread_attr_getstacksize (&attr, &stacksize);
-//    pthread_attr_setstacksize (&attr, stacksize*64);
 
     ThreadData *td = malloc(sizeof(ThreadData)); // free'd in runThread
     td->vm = vm;
@@ -846,10 +840,8 @@ void* vmThread(VM* callvm, func f, VAL arg) {
 
     callvm->processes++;
 
-    int ok = pthread_create(&t, &attr, runThread, td);
-    pthread_attr_destroy(&attr);
-//    usleep(100);
-    if (ok == 0) {
+    int ok = xTaskCreate(runThread, "non-root", 2000, td, 0, NULL);
+    if (ok == pdPASS) {
         return vm;
     } else {
         terminate(vm);
@@ -929,6 +921,7 @@ VAL copyTo(VM* vm, VAL x) {
     return ret;
 }
 
+#ifdef HAS_PTHREAD
 // Add a message to another VM's message queue
 int idris_sendMessage(VM* sender, int channel_id, VM* dest, VAL msg) {
     // FIXME: If GC kicks in in the middle of the copy, we're in trouble.
