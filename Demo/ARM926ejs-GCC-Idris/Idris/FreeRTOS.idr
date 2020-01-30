@@ -33,9 +33,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *** End of disclaimer. ***
 -}
 
-module System.Concurrency.Channels
-
-import System.Concurrency.Raw
+module FreeRTOS
 
 ||| A Channel is a connection between two processes. Channels can be created
 ||| either using 'listen' to wait for an incoming connection, or 'connect'
@@ -54,28 +52,24 @@ data PID : Type where
 ||| Returns `Nothing` if there are not enough resources to create the new thread
 export
 spawn : (process : IO ()) -> IO (Maybe PID)
-spawn proc = do pid <- fork proc
-                if !(nullPtr pid)
-                   then pure Nothing
-                   else pure (Just (MkPID pid))
+spawn proc = do
+    pid <- fork proc
+    if !(nullPtr pid)
+        then pure Nothing
+        else pure (Just (MkPID pid))
 
 ||| Create a channel which connects this process to another process
 export
 connect : (pid : PID) -> IO (Maybe Channel)
-connect (MkPID pid) = do ch_id <- sendToThread pid 0 ()
-                         if (ch_id /= 0)
-                            then pure (Just (MkConc pid ch_id))
-                            else pure Nothing
+connect (MkPID pid) =
+    ?connect_impl
 
 ||| Listen for incoming connections. If another process has initiated a
 ||| communication with this process, returns a channel 
 export
 listen : (timeout : Int) -> IO (Maybe Channel)
-listen timeout = do checkMsgsTimeout timeout
-                    Just (client, ch_id) <- listenMsgs
-                       | Nothing => pure Nothing
-                    getMsgFrom {a = ()} client ch_id -- remove init message
-                    pure (Just (MkConc client ch_id))
+listen timeout =
+    ?listen_impl
 
 ||| Send a message on a channel. Returns whether the message was successfully
 ||| sent to the process at the other end of the channel. This will fail if
@@ -85,9 +79,8 @@ listen timeout = do checkMsgsTimeout timeout
 ||| is of type expected by the receiver.
 export
 unsafeSend : Channel -> (val : a) -> IO Bool
-unsafeSend (MkConc pid ch_id) val
-     = do ok <- sendToThread pid ch_id val
-          pure (ok /= 0)
+unsafeSend (MkConc pid ch_id) val =
+    ?undsafeSend_impl
 
 ||| Receive a message on a channel, with an explicit type.
 ||| Blocks if there is nothing to receive. Returns `Nothing` if the
@@ -97,9 +90,13 @@ unsafeSend (MkConc pid ch_id) val
 ||| is of the type given by the sender.
 export
 unsafeRecv : (expected : Type) -> Channel -> IO (Maybe expected)
-unsafeRecv a (MkConc pid ch_id) = getMsgFrom {a} pid ch_id
+unsafeRecv a (MkConc pid ch_id) =
+    ?unsafeRecv_impl
 
 ||| Exit the thread immediately
 export
 stopThread : IO a
-stopThread = Raw.stopThread 
+stopThread = do
+    vm <- getMyVM
+    MkRaw res <- foreign FFI_C "idris_stopThread" (Ptr -> IO (Raw a)) vm
+    pure res

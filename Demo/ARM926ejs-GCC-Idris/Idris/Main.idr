@@ -8,7 +8,7 @@ See "LICENSE_BSD2.txt" for details.
 
 module Main
 
-import System.Concurrency.Channels
+import FreeRTOS
 import Utils
 
 printer : IO ()
