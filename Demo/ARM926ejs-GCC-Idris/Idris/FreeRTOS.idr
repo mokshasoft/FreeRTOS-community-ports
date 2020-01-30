@@ -62,7 +62,11 @@ spawn proc = do
 export
 connect : (pid : PID) -> IO (Maybe Channel)
 connect (MkPID pid) =
-    ?connect_impl
+    vm <- getMyVM
+    ch_id <- foreign FFI_C "idris_connect" (Ptr -> Ptr -> IO int) vm pid
+    if (ch_id /= 0)
+        then pure (Just (MkConc pid ch_id))
+        else pure Nothing
 
 ||| Listen for incoming connections. If another process has initiated a
 ||| communication with this process, returns a channel 
