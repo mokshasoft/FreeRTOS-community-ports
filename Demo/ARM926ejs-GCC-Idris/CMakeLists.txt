@@ -111,6 +111,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
     -Wno-implicit-function-declaration \
     -Wno-int-conversion \
     -DIDRIS_TARGET_OS=\"\\\"bare-metal\\\"\" \
+    -DFREERTOS \
     -DBARE_METAL"
 )
 

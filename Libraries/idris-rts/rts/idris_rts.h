@@ -13,6 +13,10 @@
 #include <stdarg.h>
 #include <pthread.h>
 #endif
+#ifdef FREERTOS
+#include <FreeRTOS.h>
+#include <task.h>
+#endif // FREERTOS
 
 #include "idris_heap.h"
 #include "idris_stats.h"
@@ -154,6 +158,9 @@ struct VM {
     int inbox_nextid; // Next channel id
     Msg* inbox_write; // Location of next message to write
 #endif
+#ifdef FREERTOS
+    TaskHandle_t xTaskHandle;
+#endif // FREERTOS
 
     int processes; // Number of child processes
     int max_threads; // maximum number of threads to run in parallel

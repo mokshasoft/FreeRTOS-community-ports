@@ -13,8 +13,6 @@
 #ifndef BARE_METAL
 #include "getline.h"
 #endif // BARE_METAL
-#include <FreeRTOS.h>
-#include <task.h>
 
 #define STATIC_ASSERT(COND,MSG) typedef char static_assertion_##MSG[(COND)?1:-1]
 
@@ -78,14 +76,17 @@ VM* init_vm(int stack_size, size_t heap_size,
     pthread_mutex_init(&(vm->inbox_block), NULL);
     pthread_mutex_init(&(vm->alloc_lock), &rec_attr);
     pthread_cond_init(&(vm->inbox_waiting), NULL);
+#else
+    global_vm = vm;
+#endif
+#ifdef FREERTOS
+    vm->xTaskHandle = NULL;
+#endif // FREERTOS
 
     vm->max_threads = max_threads;
     vm->processes = 0;
     vm->creator = NULL;
 
-#else
-    global_vm = vm;
-#endif
     STATS_LEAVE_INIT(vm->stats)
     return vm;
 }
@@ -839,8 +840,10 @@ void* vmThread(VM* callvm, func f, VAL arg) {
 
     callvm->processes++;
 
-    int ok = xTaskCreate(runThread, "non-root", 2000, td, 0, NULL);
+    TaskHandle_t pxCreatedTask;
+    int ok = xTaskCreate(runThread, "non-root", 2000, td, 0, &pxCreatedTask);
     if (ok == pdPASS) {
+	vm->xTaskHandle = pxCreatedTask;
         return vm;
     } else {
         terminate(vm);
@@ -849,8 +852,12 @@ void* vmThread(VM* callvm, func f, VAL arg) {
 }
 
 void* idris_stopThread(VM* vm) {
-    terminate(vm);
+#ifndef FREERTOS
     pthread_exit(NULL);
+#else
+    vTaskDelete(vm->xTaskHandle);
+#endif // FREERTOS
+    terminate(vm);
     return NULL;
 }
 

@@ -11,11 +11,18 @@ module Main
 import FreeRTOS
 import Utils
 
-printer : IO ()
-printer = do
+printerLoop : Int -> IO ()
+printerLoop 0 = do
+    vDirectPrintMsg "Stopping printer thread\n"
+    stopThread
+printerLoop n = do
     vDirectPrintMsg "Printing from printer..\n"
     vTaskDelay 2000
-    printer
+    printerLoop (n - 1)
+
+printer : IO ()
+printer = 
+    printerLoop 5
 
 main : IO ()
 main = do
