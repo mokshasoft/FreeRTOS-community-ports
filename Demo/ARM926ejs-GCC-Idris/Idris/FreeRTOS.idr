@@ -99,8 +99,7 @@ unsafeRecv a (MkConc pid ch_id) =
 
 ||| Exit the thread immediately
 export
-stopThread : IO a
+stopThread : IO ()
 stopThread = do
     vm <- getMyVM
-    MkRaw res <- foreign FFI_C "idris_stopThread" (Ptr -> IO (Raw a)) vm
-    pure res
+    foreign FFI_C "idris_stopThread" (Ptr -> IO ()) vm
