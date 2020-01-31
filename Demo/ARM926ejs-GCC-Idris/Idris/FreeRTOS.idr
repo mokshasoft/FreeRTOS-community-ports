@@ -61,9 +61,9 @@ spawn proc = do
 ||| Create a channel which connects this process to another process
 export
 connect : (pid : PID) -> IO (Maybe Channel)
-connect (MkPID pid) =
+connect (MkPID pid) = do
     vm <- getMyVM
-    ch_id <- foreign FFI_C "idris_connect" (Ptr -> Ptr -> IO int) vm pid
+    ch_id <- foreign FFI_C "idris_connect" (Ptr -> Ptr -> IO Int) vm pid
     if (ch_id /= 0)
         then pure (Just (MkConc pid ch_id))
         else pure Nothing
