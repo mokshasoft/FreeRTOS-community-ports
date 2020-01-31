@@ -1,6 +1,7 @@
 {-
 Copyright (c) 2011 Edwin Brady
     School of Computer Science, University of St Andrews
+Copyright 2020, Mokshasoft AB (mokshasoft.com)
 All rights reserved.
 
 This code is derived from software written by Edwin Brady
