@@ -419,10 +419,6 @@ void* idris_stopThread(VM* vm);
 // Copy a structure to another vm's heap
 VAL copyTo(VM* newVM, VAL x);
 
-#ifdef FREERTOS
-int idris_connect(VM* sender, VM* dest);
-#endif // FREERTOS
-
 // Add a message to another VM's message queue
 int idris_sendMessage(VM* sender, int channel_id, VM* dest, VAL msg);
 // Check whether there are any messages in the queue and return PID of

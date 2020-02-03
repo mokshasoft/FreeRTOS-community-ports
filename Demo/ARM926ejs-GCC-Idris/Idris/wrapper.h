@@ -6,4 +6,12 @@
  * See "LICENSE_BSD2.txt" for details.
  */
 
+#include <FreeRTOS.h>
+#include <queue.h>
+
 void wrapper_vTaskDelay(int delay_ms);
+
+QueueHandle_t wrapper_xQueueCreate(
+      UBaseType_t uxQueueLength,
+      UBaseType_t uxItemSize);
+void wrapper_vQueueDelete(QueueHandle_t xQueue);

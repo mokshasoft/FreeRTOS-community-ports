@@ -931,13 +931,6 @@ VAL copyTo(VM* vm, VAL x) {
     return ret;
 }
 
-#ifdef FREERTOS
-int idris_connect(VM* sender, VM* dest)
-{
-    return 0; // TODOjc
-}
-#endif // FREERTOS
-
 #ifdef HAS_PTHREAD
 // Add a message to another VM's message queue
 int idris_sendMessage(VM* sender, int channel_id, VM* dest, VAL msg) {

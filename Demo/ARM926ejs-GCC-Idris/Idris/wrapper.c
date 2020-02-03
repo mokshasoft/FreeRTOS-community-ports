@@ -7,10 +7,20 @@
  */
 
 #include "wrapper.h"
-#include <FreeRTOS.h>
-#include <task.h>
 
 void wrapper_vTaskDelay(int delay_ms)
 {
     vTaskDelay(delay_ms/portTICK_RATE_MS);
+}
+
+QueueHandle_t wrapper_xQueueCreate(
+      UBaseType_t uxQueueLength,
+      UBaseType_t uxItemSize)
+{
+    return xQueueCreate(uxQueueLength, uxItemSize);
+}
+
+void wrapper_vQueueDelete(QueueHandle_t xQueue)
+{
+    vQueueDelete(xQueue);
 }

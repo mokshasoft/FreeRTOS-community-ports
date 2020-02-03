@@ -10,6 +10,7 @@ module Main
 
 import FreeRTOS
 import Utils
+import Queue
 
 printerLoop : Int -> IO ()
 printerLoop 0 = do
