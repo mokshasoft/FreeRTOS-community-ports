@@ -43,11 +43,22 @@ vQueueDelete (MkQueueHandle handle) =
       QueueHandle_t xQueue,
       const void * pvItemToQueue,
       TickType_t xTicksToWait);
+  Only send and receive Ints for now
 -}
+export
+vQueueSend : QueueHandle -> Int -> Int -> IO ()
+vQueueSend (MkQueueHandle handle) value ms =
+    foreign FFI_C "wrapper_vQueueSend" (Ptr -> Int -> Int -> IO ()) handle value ms
 
 {-
    BaseType_t xQueueReceive(
        QueueHandle_t xQueue,
        void *pvBuffer,
        TickType_t xTicksToWait);
+  Only send and receive Ints for now
 -}
+export
+vQueueReceive : QueueHandle -> Int -> IO Int
+vQueueReceive (MkQueueHandle handle) ms =
+    res <- foreign FFI_C "wrapper_vQueueReceive" (Ptr -> Int -> IO Int) handle ms
+    pure res
