@@ -58,6 +58,9 @@
 
 #define configUSE_MUTEXES                 0
 
+/* Keep a pointer to each task's VM */
+#define configNUM_THREAD_LOCAL_STORAGE_POINTERS  1
+
 /* Co-routine definitions. */
 #define configUSE_CO_ROUTINES             0
 #define configMAX_CO_ROUTINE_PRIORITIES   ( 2 )

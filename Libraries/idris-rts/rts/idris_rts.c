@@ -105,6 +105,8 @@ VM* idris_vm(void) {
 VM* get_vm(void) {
 #ifdef HAS_PTHREAD
     return pthread_getspecific(vm_key);
+#elif FREERTOS
+    return pvTaskGetThreadLocalStoragePointer(NULL, 0);
 #else
     return global_vm;
 #endif
@@ -130,6 +132,8 @@ void init_threadkeys(void) {
 void init_threaddata(VM *vm) {
 #ifdef HAS_PTHREAD
     pthread_setspecific(vm_key, vm);
+#elif FREERTOS
+    vTaskSetThreadLocalStoragePointer(NULL, 0, vm);
 #endif
 }
 
