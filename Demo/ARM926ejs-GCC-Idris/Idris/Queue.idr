@@ -59,6 +59,6 @@ vQueueSend (MkQueueHandle handle) value ms =
 -}
 export
 vQueueReceive : QueueHandle -> Int -> IO Int
-vQueueReceive (MkQueueHandle handle) ms =
+vQueueReceive (MkQueueHandle handle) ms = do
     res <- foreign FFI_C "wrapper_vQueueReceive" (Ptr -> Int -> IO Int) handle ms
     pure res
