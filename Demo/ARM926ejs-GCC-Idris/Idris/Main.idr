@@ -21,11 +21,11 @@ printerLoop n = do
     vTaskDelay 2000
     printerLoop (n - 1)
 
-printer : IO ()
-printer = 
-    printerLoop 5
+printer : Int -> IO ()
+printer nbr = 
+    printerLoop nbr
 
 main : IO ()
 main = do
-    Just pidPrinter <- spawn printer | Nothing => vDirectPrintMsg "spawning printer failed"
+    Just pidPrinter <- spawn (printer 2) | Nothing => vDirectPrintMsg "spawning printer failed"
     vDirectPrintMsg "Hello, Idris Unikernel\n"
