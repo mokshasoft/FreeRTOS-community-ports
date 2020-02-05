@@ -30,7 +30,7 @@ printer nbr =
     printerLoop nbr
 
 {-
- - Receiver of items in Queue
+ - Receiver of items from Queue
  -}
 
 receiver : QueueHandle -> IO ()
@@ -39,17 +39,36 @@ receiver handle = do
     vTaskDelay 1000
     receiver handle
 
+{-
+ - Sender of items to Queue
+ -}
+
+sender : QueueHandle -> IO ()
+sender handle = do
+    vDirectPrintMsg "sender\n"
+    vTaskDelay 1000
+    sender handle
+
+{-
+ - Main program
+ -}
 main : IO ()
 main = do
+    vDirectPrintMsg "Hello, Idris Unikernel\n"
     -- Start printer
     Just pidPrinter <- spawn (printer 5) | Nothing => vDirectPrintMsg "spawning printer failed\n"
-    -- Create queue and start receiver
+    -- Create queue
     maybeHandle <- xQueueCreate 2 8
     case maybeHandle of
          Nothing => vDirectPrintMsg "Could not create queue\n"
          Just handle => do
-             pid <- spawn (receiver handle)
-             case pid of
+             -- Start receiver
+             pidRec <- spawn (receiver handle)
+             case pidRec of
                   Nothing => vDirectPrintMsg "spawning receiver failed\n"
                   Just p => vDirectPrintMsg "receiver started\n"
-    vDirectPrintMsg "Hello, Idris Unikernel\n"
+             -- Start sender
+             pidSend <- spawn (sender handle)
+             case pidSend of
+                  Nothing => vDirectPrintMsg "spawning sender failed\n"
+                  Just p => vDirectPrintMsg "sender started\n"
