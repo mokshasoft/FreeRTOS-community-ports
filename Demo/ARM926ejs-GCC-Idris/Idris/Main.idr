@@ -12,6 +12,10 @@ import FreeRTOS
 import Utils
 import Queue
 
+{-
+ - Printer loop
+ -}
+
 printerLoop : Int -> IO ()
 printerLoop 0 = do
     vDirectPrintMsg "Stopping printer thread\n"
@@ -25,7 +29,27 @@ printer : Int -> IO ()
 printer nbr = 
     printerLoop nbr
 
+{-
+ - Receiver of items in Queue
+ -}
+
+receiver : QueueHandle -> IO ()
+receiver handle = do
+    vDirectPrintMsg "receiver\n"
+    vTaskDelay 1000
+    receiver handle
+
 main : IO ()
 main = do
-    Just pidPrinter <- spawn (printer 2) | Nothing => vDirectPrintMsg "spawning printer failed"
+    -- Start printer
+    Just pidPrinter <- spawn (printer 5) | Nothing => vDirectPrintMsg "spawning printer failed\n"
+    -- Create queue and start receiver
+    maybeHandle <- xQueueCreate 2 8
+    case maybeHandle of
+         Nothing => vDirectPrintMsg "Could not create queue\n"
+         Just handle => do
+             pid <- spawn (receiver handle)
+             case pid of
+                  Nothing => vDirectPrintMsg "spawning receiver failed\n"
+                  Just p => vDirectPrintMsg "receiver started\n"
     vDirectPrintMsg "Hello, Idris Unikernel\n"
