@@ -13,6 +13,10 @@
 #include <stdarg.h>
 #include <pthread.h>
 #endif
+#ifdef FREERTOS
+#include <FreeRTOS.h>
+#include <task.h>
+#endif // FREERTOS
 
 #include "idris_heap.h"
 #include "idris_stats.h"
@@ -153,11 +157,15 @@ struct VM {
     Msg* inbox_end; // End of block of memory
     int inbox_nextid; // Next channel id
     Msg* inbox_write; // Location of next message to write
+#endif
+#ifdef FREERTOS
+    TaskHandle_t xTaskHandle;
+#endif // FREERTOS
 
     int processes; // Number of child processes
     int max_threads; // maximum number of threads to run in parallel
     struct VM* creator; // The VM that created this VM, NULL for root VM
-#endif
+
     Stats stats;
 
     VAL ret;
@@ -394,6 +402,8 @@ static inline Array * allocArrayF(VM * vm, size_t len, int outer) {
 #define NULL_CON(x) ((VAL)(nullary_cons + x))
 
 #define allocArray(cl, vm, len, o) (cl) = (VAL)allocArrayF(vm, len, o)
+
+int isNull(void* ptr);
 
 int idris_errno(void);
 char* idris_showerror(int err);

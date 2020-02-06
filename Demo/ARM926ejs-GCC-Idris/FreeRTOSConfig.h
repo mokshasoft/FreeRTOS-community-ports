@@ -49,7 +49,7 @@
 #define configTICK_RATE_HZ                ( ( TickType_t ) 1000 )
 #define configMAX_PRIORITIES              ( 5 )
 #define configMINIMAL_STACK_SIZE          ( ( StackType_t ) 128 )
-#define configTOTAL_HEAP_SIZE             ( ( size_t ) ( 20480 ) )
+#define configTOTAL_HEAP_SIZE             ( ( size_t ) ( 204800 ) )
 #define configMAX_TASK_NAME_LEN           ( 16 )
 #define configUSE_TRACE_FACILITY          0
 #define configUSE_16_BIT_TICKS            0
@@ -57,6 +57,9 @@
 #define configUSE_APPLICATION_TASK_TAG    1
 
 #define configUSE_MUTEXES                 0
+
+/* Keep a pointer to each task's VM */
+#define configNUM_THREAD_LOCAL_STORAGE_POINTERS  1
 
 /* Co-routine definitions. */
 #define configUSE_CO_ROUTINES             0

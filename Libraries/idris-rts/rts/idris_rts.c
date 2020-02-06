@@ -76,14 +76,17 @@ VM* init_vm(int stack_size, size_t heap_size,
     pthread_mutex_init(&(vm->inbox_block), NULL);
     pthread_mutex_init(&(vm->alloc_lock), &rec_attr);
     pthread_cond_init(&(vm->inbox_waiting), NULL);
+#else
+    global_vm = vm;
+#endif
+#ifdef FREERTOS
+    vm->xTaskHandle = NULL;
+#endif // FREERTOS
 
     vm->max_threads = max_threads;
     vm->processes = 0;
     vm->creator = NULL;
 
-#else
-    global_vm = vm;
-#endif
     STATS_LEAVE_INIT(vm->stats)
     return vm;
 }
@@ -102,6 +105,8 @@ VM* idris_vm(void) {
 VM* get_vm(void) {
 #ifdef HAS_PTHREAD
     return pthread_getspecific(vm_key);
+#elif FREERTOS
+    return pvTaskGetThreadLocalStoragePointer(NULL, 0);
 #else
     return global_vm;
 #endif
@@ -127,6 +132,8 @@ void init_threadkeys(void) {
 void init_threaddata(VM *vm) {
 #ifdef HAS_PTHREAD
     pthread_setspecific(vm_key, vm);
+#elif FREERTOS
+    vTaskSetThreadLocalStoragePointer(NULL, 0, vm);
 #endif
 }
 
@@ -800,14 +807,13 @@ VAL idris_systemInfo(VM* vm, VAL index) {
     return MKSTR(vm, "");
 }
 
-#ifdef HAS_PTHREAD
 typedef struct {
     VM* vm; // thread's VM
     func fn;
     VAL arg;
 } ThreadData;
 
-void* runThread(void* arg) {
+void runThread(void* arg) {
     ThreadData* td = (ThreadData*)arg;
     VM* vm = td->vm;
     func fn = td->fn;
@@ -823,7 +829,6 @@ void* runThread(void* arg) {
     //    Stats stats =
     terminate(vm);
     //    aggregate_stats(&(td->vm->stats), &stats);
-    return NULL;
 }
 
 void* vmThread(VM* callvm, func f, VAL arg) {
@@ -831,13 +836,6 @@ void* vmThread(VM* callvm, func f, VAL arg) {
                      callvm->max_threads);
     vm->processes=1; // since it can send and receive messages
     vm->creator = callvm;
-    pthread_t t;
-    pthread_attr_t attr;
-//    size_t stacksize;
-
-    pthread_attr_init(&attr);
-//    pthread_attr_getstacksize (&attr, &stacksize);
-//    pthread_attr_setstacksize (&attr, stacksize*64);
 
     ThreadData *td = malloc(sizeof(ThreadData)); // free'd in runThread
     td->vm = vm;
@@ -846,10 +844,10 @@ void* vmThread(VM* callvm, func f, VAL arg) {
 
     callvm->processes++;
 
-    int ok = pthread_create(&t, &attr, runThread, td);
-    pthread_attr_destroy(&attr);
-//    usleep(100);
-    if (ok == 0) {
+    TaskHandle_t pxCreatedTask;
+    int ok = xTaskCreate(runThread, "non-root", 2000, td, 0, &pxCreatedTask);
+    if (ok == pdPASS) {
+	vm->xTaskHandle = pxCreatedTask;
         return vm;
     } else {
         terminate(vm);
@@ -858,8 +856,12 @@ void* vmThread(VM* callvm, func f, VAL arg) {
 }
 
 void* idris_stopThread(VM* vm) {
-    terminate(vm);
+#ifndef FREERTOS
     pthread_exit(NULL);
+#else
+    vTaskDelete(vm->xTaskHandle);
+#endif // FREERTOS
+    terminate(vm);
     return NULL;
 }
 
@@ -929,6 +931,7 @@ VAL copyTo(VM* vm, VAL x) {
     return ret;
 }
 
+#ifdef HAS_PTHREAD
 // Add a message to another VM's message queue
 int idris_sendMessage(VM* sender, int channel_id, VM* dest, VAL msg) {
     // FIXME: If GC kicks in in the middle of the copy, we're in trouble.
@@ -1129,6 +1132,10 @@ int idris_getChannel(Msg* msg) {
 
 void idris_freeMsg(Msg* msg) {
     free(msg);
+}
+
+int isNull(void* ptr) {
+    return ptr==NULL;
 }
 
 int idris_errno(void) {

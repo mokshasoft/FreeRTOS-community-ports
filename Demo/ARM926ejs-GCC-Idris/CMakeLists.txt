@@ -46,9 +46,9 @@ set(APP_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Idris Main
 file(GLOB idris_main
-    ${APP_DIR}/Main.idr
+    ${APP_DIR}/Idris/Main.idr
 )
-set(idris_src_paths ${APP_DIR})
+set(idris_src_paths ${APP_DIR}/Idris)
 idris_tc_files(${APP}-main.c ${idris_main} ${idris_src_paths})
 
 # Use custom linking
@@ -74,6 +74,8 @@ file(GLOB static
     ${DRIVERS_DIR}/timer.c
     ${DRIVERS_DIR}/interrupt.c
     ${DRIVERS_DIR}/uart.c
+    # FreeRTOS Idris wrapper
+    ${APP_DIR}/Idris/wrapper.c
     # App base
     ${APP_DIR}/startup.s
     ${APP_DIR}/init.c
@@ -109,6 +111,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
     -Wno-implicit-function-declaration \
     -Wno-int-conversion \
     -DIDRIS_TARGET_OS=\"\\\"bare-metal\\\"\" \
+    -DFREERTOS \
     -DBARE_METAL"
 )
 
@@ -134,5 +137,6 @@ target_include_directories(${APP} PUBLIC
     ${FREERTOS_PORT_DIR}
     ${DRIVERS_DIR}/include
     ${APP_DIR}
+    ${APP_DIR}/Idris
     ${IDRIS_RTS}/rts
 )
