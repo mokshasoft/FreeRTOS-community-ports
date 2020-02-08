@@ -48,8 +48,10 @@ set(APP_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 file(GLOB idris_main
     ${APP_DIR}/Idris/Main.idr
 )
-set(idris_src_paths ${APP_DIR}/Idris)
-idris_tc_files(${APP}-main.c ${idris_main} ${idris_src_paths})
+file(GLOB idris_all
+    ${APP_DIR}/Idris/*.idr
+)
+idris_tc_files(${APP}-main.c ${idris_main} ${idris_all})
 
 # Use custom linking
 set(LINKER_SCRIPT ${APP_DIR}/qemu.ld)

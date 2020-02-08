@@ -24,10 +24,16 @@ function(test_idris_version version)
 endfunction()
 
 # Transcompile Idris files to C
-function(idris_tc_files target idris_main)
+function(idris_tc_files target idris_main other_files)
+    # Get all Idris file dependencies (other_files)
+    set(dep_files ${ARGV})
+    list(REMOVE_AT dep_files 0 1)
+    # Get the source paths (actually only from main)
+    get_filename_component(src_path ${idris_main} DIRECTORY)
+    # Add command
     add_custom_command(
         OUTPUT ${target}
-        COMMAND idris -i ${ARGN} --codegen C --codegenonly -o ${CMAKE_CURRENT_BINARY_DIR}/${target} ${idris_main}
-        DEPENDS ${idris_main}
+        COMMAND idris -i ${src_path} --codegen C --codegenonly -o ${CMAKE_CURRENT_BINARY_DIR}/${target} ${idris_main}
+        DEPENDS ${idris_main} ${dep_files}
     )
 endfunction()
