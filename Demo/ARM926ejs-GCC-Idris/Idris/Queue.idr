@@ -11,11 +11,12 @@ module Queue
 %default total
 
 %include C "wrapper.h"
+%include C "idris_rts.h"
 
-||| A QueueHandle
+-- A QueueHandle
 export
-data QueueHandle : Type where
-     MkQueueHandle : (handle : Ptr) -> QueueHandle
+data QueueHandle : Type -> Type where
+    MkQueueHandle : (handle : Ptr) -> QueueHandle itemType
 
 {-
   QueueHandle_t xQueueCreate(
@@ -23,8 +24,9 @@ data QueueHandle : Type where
       UBaseType_t uxItemSize);
 -}
 export
-xQueueCreate : Int -> Int -> IO (Maybe QueueHandle)
-xQueueCreate len item_size = do
+queueCreate : (itemType : Type) -> Int -> IO (Maybe (QueueHandle itemType))
+queueCreate _ len = do
+    let item_size = 8
     ptr <- foreign FFI_C "wrapper_xQueueCreate" (Int -> Int -> IO Ptr) len item_size
     if !(nullPtr ptr)
         then pure Nothing
@@ -34,8 +36,8 @@ xQueueCreate len item_size = do
   void vQueueDelete(QueueHandle_t xQueue);
 -}
 export
-vQueueDelete : QueueHandle -> IO ()
-vQueueDelete (MkQueueHandle handle) =
+queueDelete : QueueHandle itemType -> IO ()
+queueDelete (MkQueueHandle handle) =
     foreign FFI_C "wrapper_vQueueDelete" (Ptr -> IO ()) handle
 
 {-
@@ -46,19 +48,17 @@ vQueueDelete (MkQueueHandle handle) =
   Only send and receive Ints for now
 -}
 export
-vQueueSend : QueueHandle -> Int -> Int -> IO ()
-vQueueSend (MkQueueHandle handle) value ms =
-    foreign FFI_C "wrapper_vQueueSend" (Ptr -> Int -> Int -> IO ()) handle value ms
+queueSend : QueueHandle itemType -> itemType -> IO ()
+queueSend {itemType} (MkQueueHandle handle) value =
+    foreign FFI_C "idris_queueSend" (Ptr -> Raw itemType -> IO ()) handle (MkRaw value)
 
 {-
-   BaseType_t xQueueReceive(
-       QueueHandle_t xQueue,
-       void *pvBuffer,
-       TickType_t xTicksToWait);
+  BaseType_t xQueueReceive(
+      QueueHandle_t xQueue,
+      void *pvBuffer,
+      TickType_t xTicksToWait);
   Only send and receive Ints for now
 -}
 export
-vQueueReceive : QueueHandle -> Int -> IO Int
-vQueueReceive (MkQueueHandle handle) ms = do
-    res <- foreign FFI_C "wrapper_vQueueReceive" (Ptr -> Int -> IO Int) handle ms
-    pure res
+queueReceive : QueueHandle itemType -> IO itemType
+queueReceive (MkQueueHandle handle) = ?recQueue

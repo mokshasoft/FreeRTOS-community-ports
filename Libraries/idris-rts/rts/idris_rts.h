@@ -16,6 +16,7 @@
 #ifdef FREERTOS
 #include <FreeRTOS.h>
 #include <task.h>
+#include <queue.h>
 #endif // FREERTOS
 
 #include "idris_heap.h"
@@ -418,6 +419,11 @@ void* idris_stopThread(VM* vm);
 
 // Copy a structure to another vm's heap
 VAL copyTo(VM* newVM, VAL x);
+
+#ifdef FREERTOS
+void idris_queueSend(QueueHandle_t xQueue, VAL msg);
+VAL idris_queueGet(VM* vm, QueueHandle_t xQueue);
+#endif // FREERTOS
 
 // Add a message to another VM's message queue
 int idris_sendMessage(VM* sender, int channel_id, VM* dest, VAL msg);

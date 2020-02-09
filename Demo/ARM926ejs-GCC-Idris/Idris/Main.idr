@@ -33,7 +33,7 @@ printer nbr =
  - Receiver of items from Queue
  -}
 
-receiver : QueueHandle -> IO ()
+receiver : QueueHandle itemType -> IO ()
 receiver handle = do
     vDirectPrintMsg "receiver\n"
     vTaskDelay 1000
@@ -43,7 +43,7 @@ receiver handle = do
  - Sender of items to Queue
  -}
 
-sender : QueueHandle -> IO ()
+sender : QueueHandle itemType -> IO ()
 sender handle = do
     vDirectPrintMsg "sender\n"
     vTaskDelay 1000
@@ -59,7 +59,9 @@ main = do
     -- Start printer
     Just pidPrinter <- spawn (printer 5) | Nothing => vDirectPrintMsg "spawning printer failed\n"
     -- Create queue
-    Just handle <- xQueueCreate 2 8 | Nothing => vDirectPrintMsg "Could not create queue\n"
+    Just handle <- queueCreate Int 8 | Nothing => vDirectPrintMsg "Could not create queue\n"
+    --queueSend handle 5
+    --queueSend handle "str"
     -- Start receiver
     Just pidRec <- spawn (receiver handle) | Nothing => vDirectPrintMsg "spawning receiver failed\n"
     -- Start sender

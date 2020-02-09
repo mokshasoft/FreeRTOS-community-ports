@@ -931,6 +931,19 @@ VAL copyTo(VM* vm, VAL x) {
     return ret;
 }
 
+#ifdef FREERTOS
+void idris_queueSend(QueueHandle_t xQueue, VAL msg) {
+    BaseType_t dummy = xQueueSend(xQueue, msg, portMAX_DELAY);
+}
+
+VAL idris_queueGet(VM* vm, QueueHandle_t xQueue) {
+    VAL* msg;
+    BaseType_t dummy = xQueueReceive(xQueue, &msg, portMAX_DELAY);
+    VAL dmsg = doCopyTo(vm, *msg);
+    return dmsg;
+}
+#endif // FREERTOS
+
 #ifdef HAS_PTHREAD
 // Add a message to another VM's message queue
 int idris_sendMessage(VM* sender, int channel_id, VM* dest, VAL msg) {
