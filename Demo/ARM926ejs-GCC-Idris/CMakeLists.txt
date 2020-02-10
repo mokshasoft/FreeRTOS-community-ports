@@ -24,7 +24,7 @@ set(CMAKE_C_FLAGS "\
     -nostdlib \
     -Wall -Wextra -Werror \
     -fdata-sections -ffunction-sections \
-    -Wno-unused-label -Wno-unused-parameter -Wno-sign-compare"
+    -Wno-unused-label -Wno-unused-parameter -Wno-sign-compare -Wno-return-type"
 )
 
 # Use FreeRTOS's malloc implementation
