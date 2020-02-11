@@ -61,7 +61,6 @@ main = do
     Just pidPrinter <- spawn (printer 5) | Nothing => vDirectPrintMsg "spawning printer failed\n"
     -- Create queue
     Just handle <- queueCreate Int 8 | Nothing => vDirectPrintMsg "Could not create queue\n"
-    --queueSend handle "str"
     -- Start receiver
     Just pidRec <- spawn (receiver handle) | Nothing => vDirectPrintMsg "spawning receiver failed\n"
     -- Start sender
