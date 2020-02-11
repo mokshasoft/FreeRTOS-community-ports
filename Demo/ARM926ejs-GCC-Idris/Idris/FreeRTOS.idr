@@ -44,8 +44,8 @@ data PID : Type where
 ||| Spawn a process in a new thread, returning the process ID
 ||| Returns `Nothing` if there are not enough resources to create the new thread
 export
-spawn : (process : IO ()) -> IO (Maybe PID)
-spawn proc = do
+startThread : (process : IO ()) -> IO (Maybe PID)
+startThread proc = do
     pid <- fork proc
     if !(nullPtr pid)
         then pure Nothing
