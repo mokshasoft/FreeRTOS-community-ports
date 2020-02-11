@@ -36,7 +36,9 @@ printer nbr =
 receiver : QueueHandle Int -> IO ()
 receiver handle = do
     val <- queueReceive handle
-    vDirectPrintMsg ("received: " ++ show 5 ++ "\n")
+    if val == 5 -- for some reason (show val) creates a linking error
+        then vDirectPrintMsg ("received: 5\n")
+        else vDirectPrintMsg ("received: not 5\n")
     vTaskDelay 1000
     receiver handle
 
