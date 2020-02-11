@@ -35,7 +35,8 @@ printer nbr =
 
 receiver : QueueHandle Int -> IO ()
 receiver handle = do
-    vDirectPrintMsg "receiver\n"
+    val <- queueReceive handle
+    vDirectPrintMsg "received: \n"
     vTaskDelay 1000
     receiver handle
 
@@ -45,7 +46,7 @@ receiver handle = do
 
 sender : QueueHandle Int -> IO ()
 sender handle = do
-    vDirectPrintMsg "sending\n"
+    vDirectPrintMsg "sending 5\n"
     queueSend handle 5
     vTaskDelay 1000
     sender handle

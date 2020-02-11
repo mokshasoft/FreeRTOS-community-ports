@@ -61,4 +61,7 @@ queueSend {itemType} (MkQueueHandle handle) value =
 -}
 export
 queueReceive : QueueHandle itemType -> IO itemType
-queueReceive (MkQueueHandle handle) = ?recQueue
+queueReceive {itemType} (MkQueueHandle handle) = do
+    me <- getMyVM
+    MkRaw x <- foreign FFI_C "idris_queueGet" (Ptr -> Ptr -> IO (Raw itemType)) me handle
+    pure x
