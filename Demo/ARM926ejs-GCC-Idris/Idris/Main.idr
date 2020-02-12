@@ -33,12 +33,11 @@ printer nbr =
  - Receiver of items from Queue
  -}
 
-receiver : QueueHandle Int -> IO ()
+receiver : QueueHandle String -> IO ()
 receiver handle = do
     val <- queueReceive handle
-    if val == 5 -- for some reason (show val) creates a linking error
-        then vDirectPrintMsg ("received: 5\n")
-        else vDirectPrintMsg ("received: not 5\n")
+    vDirectPrintMsg "received: \n"
+    vDirectPrintMsg val
     vTaskDelay 1000
     receiver handle
 
@@ -46,10 +45,10 @@ receiver handle = do
  - Sender of items to Queue
  -}
 
-sender : QueueHandle Int -> IO ()
+sender : QueueHandle String -> IO ()
 sender handle = do
-    vDirectPrintMsg "sending 5\n"
-    queueSend handle 5
+    vDirectPrintMsg "sending 'hello'\n"
+    queueSend handle "hello"
     vTaskDelay 1000
     sender handle
 
@@ -63,7 +62,7 @@ main = do
     -- Start printer
     Just pidPrinter <- startThread (printer 5) | Nothing => vDirectPrintMsg "starting printer failed\n"
     -- Create queue
-    Just handle <- queueCreate Int 8 | Nothing => vDirectPrintMsg "Could not create queue\n"
+    Just handle <- queueCreate String 2 | Nothing => vDirectPrintMsg "Could not create queue\n"
     -- Start receiver
     Just pidRec <- startThread (receiver handle) | Nothing => vDirectPrintMsg "starting receiver failed\n"
     -- Start sender
