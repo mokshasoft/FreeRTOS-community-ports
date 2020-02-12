@@ -16,7 +16,7 @@ module Utils
 
 -- int16_t printInit(uint16_t uart_nr);
 printInit : Int -> IO Int
-printInit uart_nr = 
+printInit uart_nr =
     foreign FFI_C "printInit" (Int -> IO Int) uart_nr
 
 -- void vDirectPrintMsg(const portCHAR* msg);
