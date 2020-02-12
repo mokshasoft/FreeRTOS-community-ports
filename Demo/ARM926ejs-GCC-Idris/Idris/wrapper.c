@@ -7,17 +7,16 @@
  */
 
 #include "wrapper.h"
+#include "idris_rts.h"
 
 void wrapper_vTaskDelay(int delay_ms)
 {
     vTaskDelay(delay_ms/portTICK_RATE_MS);
 }
 
-QueueHandle_t wrapper_xQueueCreate(
-    UBaseType_t uxQueueLength,
-    UBaseType_t uxItemSize)
+QueueHandle_t wrapper_xQueueCreate(UBaseType_t uxQueueLength)
 {
-    return xQueueCreate(uxQueueLength, uxItemSize);
+    return xQueueCreate(uxQueueLength, sizeof(VAL));
 }
 
 void wrapper_vQueueDelete(QueueHandle_t xQueue)

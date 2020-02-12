@@ -26,8 +26,7 @@ data QueueHandle : Type -> Type where
 export
 queueCreate : (itemType : Type) -> Int -> IO (Maybe (QueueHandle itemType))
 queueCreate _ len = do
-    let item_size = 8
-    ptr <- foreign FFI_C "wrapper_xQueueCreate" (Int -> Int -> IO Ptr) len item_size
+    ptr <- foreign FFI_C "wrapper_xQueueCreate" (Int -> IO Ptr) len
     if !(nullPtr ptr)
         then pure Nothing
         else pure (Just (MkQueueHandle ptr))
