@@ -36,7 +36,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 module FreeRTOS
 
-||| A PID is a process identifier, as returned by `spawn`
+||| A PID is a process identifier, as returned by `startThread`
 export
 data PID : Type where
      MkPID : (pid : Ptr) -> PID
