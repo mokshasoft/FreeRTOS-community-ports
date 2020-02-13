@@ -16,7 +16,7 @@ void wrapper_vTaskDelay(int delay_ms)
 
 QueueHandle_t wrapper_xQueueCreate(UBaseType_t uxQueueLength)
 {
-    return xQueueCreate(uxQueueLength, sizeof(VAL));
+    return xQueueCreate(uxQueueLength, sizeof(void*));
 }
 
 void wrapper_vQueueDelete(QueueHandle_t xQueue)

@@ -933,14 +933,13 @@ VAL copyTo(VM* vm, VAL x) {
 
 #ifdef FREERTOS
 void idris_queueSend(QueueHandle_t xQueue, VAL msg) {
-    BaseType_t dummy = xQueueSend(xQueue, msg, portMAX_DELAY);
+    BaseType_t dummy = xQueueSend(xQueue, (void*)&msg, portMAX_DELAY);
 }
 
 VAL idris_queueGet(VM* vm, QueueHandle_t xQueue) {
-    VAL* msg;
-    BaseType_t dummy = xQueueReceive(xQueue, &msg, portMAX_DELAY);
-    VAL dmsg = doCopyTo(vm, *msg);
-    return dmsg;
+    VAL msg = NULL;
+    BaseType_t dummy = xQueueReceive(xQueue, (void*)&msg, portMAX_DELAY);
+    return doCopyTo(vm, msg);
 }
 #endif // FREERTOS
 
