@@ -1,0 +1,7 @@
+define disp
+    if (*(String *)$arg0).hdr.ty == 5
+        print (*(String *)$arg0).str
+    else
+        print "unknown VAL type"
+    end
+end
