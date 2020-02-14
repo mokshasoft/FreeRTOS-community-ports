@@ -81,7 +81,6 @@ file(GLOB static
     ${APP_DIR}/init.c
     ${APP_DIR}/print.c
     ${APP_DIR}/receive.c
-    ${APP_DIR}/nostdlib.c
 )
 
 # Tell CMake to treat this file as a C-file
