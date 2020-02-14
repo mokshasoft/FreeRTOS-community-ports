@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <stdio.h>
 #else
-#include "idris_no_libc.h"
+#include "idris_bare_metal.h"
 #endif
 #include <string.h>
 #ifdef HAS_PTHREAD

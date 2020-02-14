@@ -1,7 +1,7 @@
 #ifndef BARE_METAL
 #include <assert.h>
 #else
-#include "idris_no_libc.h"
+#include "idris_bare_metal.h"
 #endif // BARE_METAL
 #include <errno.h>
 #include <stdio.h>  // sprintf

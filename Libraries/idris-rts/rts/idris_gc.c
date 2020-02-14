@@ -5,7 +5,7 @@
 #ifndef BARE_METAL
 #include <assert.h>
 #else
-#include "idris_no_libc.h"
+#include "idris_bare_metal.h"
 #endif
 
 static inline VAL copy_plain(VM* vm, VAL x, size_t sz) {

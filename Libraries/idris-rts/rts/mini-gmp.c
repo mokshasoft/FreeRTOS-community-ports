@@ -45,7 +45,7 @@ see https://www.gnu.org/licenses/.  */
 #include <assert.h>
 #include <stdio.h>
 #else
-#include "idris_no_libc.h"
+#include "idris_bare_metal.h"
 #endif
 #include <ctype.h>
 #include <limits.h>

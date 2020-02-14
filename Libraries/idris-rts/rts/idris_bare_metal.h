@@ -1,5 +1,5 @@
-#ifndef _IDRIS_NO_LIBC_H
-#define _IDRIS_NO_LIBC_H
+#ifndef _IDRIS_BARE_METAL_H
+#define _IDRIS_BARE_METAL_H
 
 #undef assert
 #define assert(...)
