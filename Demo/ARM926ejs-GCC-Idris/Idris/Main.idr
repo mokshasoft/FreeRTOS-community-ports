@@ -33,10 +33,10 @@ printer nbr =
  - Receiver of items from Queue
  -}
 
-receiver : QueueHandle String -> IO ()
+receiver : QueueHandle Int -> IO ()
 receiver handle = do
     val <- get handle
-    vDirectPrintMsg $ "received: " ++ val ++ "\n"
+    vDirectPrintMsg $ "received: " ++ show val ++ "\n"
     vTaskDelay 1000
     receiver handle
 
@@ -44,11 +44,11 @@ receiver handle = do
  - Sender of items to Queue
  -}
 
-sender : QueueHandle String -> IO ()
+sender : QueueHandle Int -> IO ()
 sender handle = do
-    let str = "hello"
-    vDirectPrintMsg $ "sending " ++ str ++ "\n"
-    put handle str
+    let val = 123
+    vDirectPrintMsg $ "sending " ++ show val ++ "\n"
+    put handle val
     vTaskDelay 1000
     sender handle
 
@@ -63,7 +63,7 @@ main = do
     Just pidPrinter <- startThread (printer 5) |
         Nothing => vDirectPrintMsg "starting printer failed\n"
     -- Create queue
-    Just handle <- create String 2 |
+    Just handle <- create Int 2 |
         Nothing => vDirectPrintMsg "Could not create queue\n"
     -- Start receiver
     Just pidRec <- startThread (receiver handle) |

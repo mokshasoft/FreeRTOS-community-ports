@@ -15,7 +15,6 @@ test_idris_version(1.3.1)
 set(APP demo-ARM926ejs-Idris)
 project(${APP} C)
 
-
 # GCC flags
 set(CMAKE_C_FLAGS "\
     -c \
@@ -56,9 +55,9 @@ idris_tc_files(${APP}-main.c ${idris_main} ${idris_all})
 # Use custom linking
 set(LINKER_SCRIPT ${APP_DIR}/qemu.ld)
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} \
-    -T ${LINKER_SCRIPT} \
-    --gc-sections \
-    -lc -lgcc -L ${LIBGCC} -L ${LIBC}"
+    -Wl,-T,${LINKER_SCRIPT} \
+    -Wl,--gc-sections \
+    -nostdlib"
 )
 
 # Files in project
@@ -81,6 +80,7 @@ file(GLOB static
     ${APP_DIR}/init.c
     ${APP_DIR}/print.c
     ${APP_DIR}/receive.c
+    ${APP_DIR}/muslc_string.c
 )
 
 # Tell CMake to treat this file as a C-file
@@ -96,6 +96,8 @@ file(GLOB idris_rts_src
     ${IDRIS_RTS}/rts/idris_bitstring.c
     ${IDRIS_RTS}/rts/idris_utf8.c
     ${IDRIS_RTS}/rts/mini-gmp.c
+    ${IDRIS_RTS}/rts/itoa.c
+    ${IDRIS_RTS}/rts/ftoa.c
     ${IDRIS_RTS}/rts/FreeRTOS/idris_FreeRTOS.c
     ${IDRIS_RTS}/rts/FreeRTOS/idris_main.c
 )
