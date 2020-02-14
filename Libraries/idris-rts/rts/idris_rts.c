@@ -76,16 +76,17 @@ VM* init_vm(int stack_size, size_t heap_size,
     pthread_mutex_init(&(vm->inbox_block), NULL);
     pthread_mutex_init(&(vm->alloc_lock), &rec_attr);
     pthread_cond_init(&(vm->inbox_waiting), NULL);
+#elif defined(HAS_FREERTOS)
+    vm->xTaskHandle = NULL;
 #else
     global_vm = vm;
 #endif
-#ifdef FREERTOS
-    vm->xTaskHandle = NULL;
-#endif // FREERTOS
 
+#ifdef IS_THREADED
     vm->max_threads = max_threads;
     vm->processes = 0;
     vm->creator = NULL;
+#endif // IS_THREADED
 
     STATS_LEAVE_INIT(vm->stats)
     return vm;
@@ -105,7 +106,7 @@ VM* idris_vm(void) {
 VM* get_vm(void) {
 #ifdef HAS_PTHREAD
     return pthread_getspecific(vm_key);
-#elif FREERTOS
+#elif defined(HAS_FREERTOS)
     return pvTaskGetThreadLocalStoragePointer(NULL, 0);
 #else
     return global_vm;
@@ -132,7 +133,7 @@ void init_threadkeys(void) {
 void init_threaddata(VM *vm) {
 #ifdef HAS_PTHREAD
     pthread_setspecific(vm_key, vm);
-#elif FREERTOS
+#elif defined(HAS_FREERTOS)
     vTaskSetThreadLocalStoragePointer(NULL, 0, vm);
 #endif
 }
@@ -807,12 +808,65 @@ VAL idris_systemInfo(VM* vm, VAL index) {
     return MKSTR(vm, "");
 }
 
+#ifdef IS_THREADED
 typedef struct {
     VM* vm; // thread's VM
     func fn;
     VAL arg;
 } ThreadData;
 
+#ifdef HAS_PTHREAD
+void* runThread(void* arg) {
+    ThreadData* td = (ThreadData*)arg;
+    VM* vm = td->vm;
+    func fn = td->fn;
+
+    init_threaddata(vm);
+
+    TOP(0) = td->arg;
+    BASETOP(0);
+    ADDTOP(1);
+    free(td);
+    fn(vm, NULL);
+
+    //    Stats stats =
+    terminate(vm);
+    //    aggregate_stats(&(td->vm->stats), &stats);
+    return NULL;
+}
+
+void* vmThread(VM* callvm, func f, VAL arg) {
+    VM* vm = init_vm(callvm->stack_max - callvm->valstack, callvm->heap.size,
+                     callvm->max_threads);
+    vm->processes=1; // since it can send and receive messages
+    vm->creator = callvm;
+    pthread_t t;
+    pthread_attr_t attr;
+//    size_t stacksize;
+
+    pthread_attr_init(&attr);
+//    pthread_attr_getstacksize (&attr, &stacksize);
+//    pthread_attr_setstacksize (&attr, stacksize*64);
+
+    ThreadData *td = malloc(sizeof(ThreadData)); // free'd in runThread
+    td->vm = vm;
+    td->fn = f;
+    td->arg = copyTo(vm, arg);
+
+    callvm->processes++;
+
+    int ok = pthread_create(&t, &attr, runThread, td);
+    pthread_attr_destroy(&attr);
+//    usleep(100);
+    if (ok == 0) {
+        return vm;
+    } else {
+        terminate(vm);
+        return NULL;
+    }
+}
+
+#elif defined(HAS_FREERTOS)
 void runThread(void* arg) {
     ThreadData* td = (ThreadData*)arg;
     VM* vm = td->vm;
@@ -832,8 +886,10 @@ void runThread(void* arg) {
 }
 
 void* vmThread(VM* callvm, func f, VAL arg) {
-    VM* vm = init_vm(callvm->stack_max - callvm->valstack, callvm->heap.size,
-                     callvm->max_threads);
+    VM* vm = init_vm(
+        callvm->stack_max - callvm->valstack,
+        callvm->heap.size,
+        callvm->max_threads);
     vm->processes=1; // since it can send and receive messages
     vm->creator = callvm;
 
@@ -854,13 +910,14 @@ void* vmThread(VM* callvm, func f, VAL arg) {
         return NULL;
     }
 }
+#endif
 
 void* idris_stopThread(VM* vm) {
-#ifndef FREERTOS
+#ifdef HAS_PTHREAD
     pthread_exit(NULL);
-#else
+#elif defined(HAS_FREERTOS)
     vTaskDelete(vm->xTaskHandle);
-#endif // FREERTOS
+#endif
     terminate(vm);
     return NULL;
 }
@@ -930,18 +987,7 @@ VAL copyTo(VM* vm, VAL x) {
     VAL ret = doCopyTo(vm, x);
     return ret;
 }
-
-#ifdef FREERTOS
-void idris_queueSend(QueueHandle_t xQueue, VAL msg) {
-    BaseType_t dummy = xQueueSend(xQueue, (void*)&msg, portMAX_DELAY);
-}
-
-VAL idris_queueGet(VM* vm, QueueHandle_t xQueue) {
-    VAL msg = NULL;
-    BaseType_t dummy = xQueueReceive(xQueue, (void*)&msg, portMAX_DELAY);
-    return doCopyTo(vm, msg);
-}
-#endif // FREERTOS
+#endif // IS_THREADED
 
 #ifdef HAS_PTHREAD
 // Add a message to another VM's message queue
@@ -1128,7 +1174,6 @@ Msg* idris_recvMessageFrom(VM* vm, int channel_id, VM* sender) {
     }
     return ret;
 }
-#endif
 
 VAL idris_getMsg(Msg* msg) {
     return msg->msg;
@@ -1145,6 +1190,19 @@ int idris_getChannel(Msg* msg) {
 void idris_freeMsg(Msg* msg) {
     free(msg);
 }
+#endif // HAS_PTHREAD
+
+#ifdef HAS_FREERTOS
+void idris_queueSend(QueueHandle_t xQueue, VAL msg) {
+    BaseType_t dummy = xQueueSend(xQueue, (void*)&msg, portMAX_DELAY);
+}
+
+VAL idris_queueGet(VM* vm, QueueHandle_t xQueue) {
+    VAL msg = NULL;
+    BaseType_t dummy = xQueueReceive(xQueue, (void*)&msg, portMAX_DELAY);
+    return doCopyTo(vm, msg);
+}
+#endif // HAS_FREERTOS
 
 int isNull(void* ptr) {
     return ptr==NULL;

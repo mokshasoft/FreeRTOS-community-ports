@@ -13,11 +13,11 @@
 #include <stdarg.h>
 #include <pthread.h>
 #endif
-#ifdef FREERTOS
+#ifdef HAS_FREERTOS
 #include <FreeRTOS.h>
 #include <task.h>
 #include <queue.h>
-#endif // FREERTOS
+#endif // HAS_FREERTOS
 
 #include "idris_heap.h"
 #include "idris_stats.h"
@@ -158,14 +158,15 @@ struct VM {
     Msg* inbox_end; // End of block of memory
     int inbox_nextid; // Next channel id
     Msg* inbox_write; // Location of next message to write
-#endif
-#ifdef FREERTOS
+#elif defined(HAS_FREERTOS)
     TaskHandle_t xTaskHandle;
-#endif // FREERTOS
+#endif
 
+#ifdef IS_THREADED
     int processes; // Number of child processes
     int max_threads; // maximum number of threads to run in parallel
     struct VM* creator; // The VM that created this VM, NULL for root VM
+#endif // IS_THREADED
 
     Stats stats;
 
@@ -420,11 +421,6 @@ void* idris_stopThread(VM* vm);
 // Copy a structure to another vm's heap
 VAL copyTo(VM* newVM, VAL x);
 
-#ifdef FREERTOS
-void idris_queueSend(QueueHandle_t xQueue, VAL msg);
-VAL idris_queueGet(VM* vm, QueueHandle_t xQueue);
-#endif // FREERTOS
-
 // Add a message to another VM's message queue
 int idris_sendMessage(VM* sender, int channel_id, VM* dest, VAL msg);
 // Check whether there are any messages in the queue and return PID of
@@ -448,6 +444,11 @@ VAL idris_getMsg(Msg* msg);
 VM* idris_getSender(Msg* msg);
 int idris_getChannel(Msg* msg);
 void idris_freeMsg(Msg* msg);
+
+#ifdef HAS_FREERTOS
+void idris_queueSend(QueueHandle_t xQueue, VAL msg);
+VAL idris_queueGet(VM* vm, QueueHandle_t xQueue);
+#endif // HAS_FREERTOS
 
 void idris_trace(VM* vm, const char* func, int line);
 void dumpVal(VAL r);
