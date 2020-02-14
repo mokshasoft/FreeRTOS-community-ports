@@ -14,17 +14,17 @@ module Utils
 %include C "print.h"
 %include C "FreeRTOS/idris_FreeRTOS.h"
 
--- int16_t printInit(uint16_t uart_nr);
+||| FFI wrapper for 'int16_t printInit(uint16_t uart_nr)'
 printInit : Int -> IO Int
 printInit uart_nr =
     foreign FFI_C "printInit" (Int -> IO Int) uart_nr
 
--- void vDirectPrintMsg(const portCHAR* msg);
+||| FFI wrapper for 'void vDirectPrintMsg(const portCHAR* msg)'
 vDirectPrintMsg : String -> IO ()
 vDirectPrintMsg msg =
     foreign FFI_C "vDirectPrintMsg" (String -> IO ()) msg
 
--- Delay ms number of milliseconds
+||| Delay ms number of milliseconds
 vTaskDelay : Int -> IO ()
 vTaskDelay ms =
     foreign FFI_C "wrapper_vTaskDelay" (Int -> IO ()) ms
