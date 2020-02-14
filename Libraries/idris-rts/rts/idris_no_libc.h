@@ -9,7 +9,6 @@
 #define puts(...)
 #define fflush(...)
 
-// This has to be handled by each platform
 #define abort(...)
 #define exit(...)
 
