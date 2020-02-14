@@ -12,7 +12,7 @@ module Utils
 %default total
 
 %include C "print.h"
-%include C "wrapper.h"
+%include C "FreeRTOS/idris_FreeRTOS.h"
 
 -- int16_t printInit(uint16_t uart_nr);
 printInit : Int -> IO Int

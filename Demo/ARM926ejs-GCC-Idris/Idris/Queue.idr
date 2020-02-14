@@ -10,7 +10,7 @@ module Queue
 
 %default total
 
-%include C "wrapper.h"
+%include C "FreeRTOS/idris_FreeRTOS.h"
 %include C "idris_rts.h"
 
 -- A QueueHandle

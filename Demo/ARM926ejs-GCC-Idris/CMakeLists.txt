@@ -76,8 +76,6 @@ file(GLOB static
     ${DRIVERS_DIR}/timer.c
     ${DRIVERS_DIR}/interrupt.c
     ${DRIVERS_DIR}/uart.c
-    # FreeRTOS Idris wrapper
-    ${APP_DIR}/Idris/wrapper.c
     # App base
     ${APP_DIR}/startup.s
     ${APP_DIR}/init.c
@@ -99,6 +97,7 @@ file(GLOB idris_rts_src
     ${IDRIS_RTS}/rts/idris_bitstring.c
     ${IDRIS_RTS}/rts/idris_utf8.c
     ${IDRIS_RTS}/rts/mini-gmp.c
+    ${IDRIS_RTS}/rts/FreeRTOS/idris_FreeRTOS.c
     ${IDRIS_RTS}/rts/FreeRTOS/idris_main.c
 )
 

@@ -6,7 +6,7 @@
  * See "LICENSE_BSD2.txt" for details.
  */
 
-#include "wrapper.h"
+#include "idris_FreeRTOS.h"
 #include "idris_rts.h"
 
 void wrapper_vTaskDelay(int delay_ms)
