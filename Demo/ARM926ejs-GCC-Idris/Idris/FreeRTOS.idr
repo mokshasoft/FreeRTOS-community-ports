@@ -51,7 +51,7 @@ startThread proc = do
         then pure Nothing
         else pure (Just (MkPID pid))
 
-||| Exit the thread immediately
+||| Exit the thread
 export
 stopThread : IO ()
 stopThread = do
