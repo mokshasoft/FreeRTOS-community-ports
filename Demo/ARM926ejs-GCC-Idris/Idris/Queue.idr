@@ -13,54 +13,36 @@ module Queue
 %include C "FreeRTOS/idris_FreeRTOS.h"
 %include C "idris_rts.h"
 
--- A QueueHandle
+||| A handle to a queue
 export
 data QueueHandle : Type -> Type where
     MkQueueHandle : (handle : Ptr) -> QueueHandle itemType
 
-{-
-  QueueHandle_t xQueueCreate(
-      UBaseType_t uxQueueLength,
-      UBaseType_t uxItemSize);
--}
+||| Create a queue.
 export
-queueCreate : (itemType : Type) -> Int -> IO (Maybe (QueueHandle itemType))
-queueCreate _ len = do
+create : (itemType : Type) -> Int -> IO (Maybe (QueueHandle itemType))
+create _ len = do
     ptr <- foreign FFI_C "wrapper_xQueueCreate" (Int -> IO Ptr) len
     if !(nullPtr ptr)
         then pure Nothing
         else pure (Just (MkQueueHandle ptr))
 
-{-
-  void vQueueDelete(QueueHandle_t xQueue);
--}
+||| Delete a queue.
 export
-queueDelete : QueueHandle itemType -> IO ()
-queueDelete (MkQueueHandle handle) =
+delete : QueueHandle itemType -> IO ()
+delete (MkQueueHandle handle) =
     foreign FFI_C "wrapper_vQueueDelete" (Ptr -> IO ()) handle
 
-{-
-  BaseType_t xQueueSend(
-      QueueHandle_t xQueue,
-      const void * pvItemToQueue,
-      TickType_t xTicksToWait);
-  Only send and receive Ints for now
--}
+||| Put an element at the end of the queue, block until not full.
 export
-queueSend : QueueHandle itemType -> itemType -> IO ()
-queueSend {itemType} (MkQueueHandle handle) value =
-    foreign FFI_C "idris_queueSend" (Ptr -> Raw itemType -> IO ()) handle (MkRaw value)
+put : QueueHandle itemType -> itemType -> IO ()
+put {itemType} (MkQueueHandle handle) value =
+    foreign FFI_C "idris_queuePut" (Ptr -> Raw itemType -> IO ()) handle (MkRaw value)
 
-{-
-  BaseType_t xQueueReceive(
-      QueueHandle_t xQueue,
-      void *pvBuffer,
-      TickType_t xTicksToWait);
-  Only send and receive Ints for now
--}
+||| Get an element from the front of the queue, block until an item is available.
 export
-queueReceive : QueueHandle itemType -> IO itemType
-queueReceive {itemType} (MkQueueHandle handle) = do
+get : QueueHandle itemType -> IO itemType
+get {itemType} (MkQueueHandle handle) = do
     me <- getMyVM
     MkRaw x <- foreign FFI_C "idris_queueGet" (Ptr -> Ptr -> IO (Raw itemType)) me handle
     pure x

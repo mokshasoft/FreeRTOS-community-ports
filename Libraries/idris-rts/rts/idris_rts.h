@@ -446,7 +446,7 @@ int idris_getChannel(Msg* msg);
 void idris_freeMsg(Msg* msg);
 
 #ifdef HAS_FREERTOS
-void idris_queueSend(QueueHandle_t xQueue, VAL msg);
+void idris_queuePut(QueueHandle_t xQueue, VAL msg);
 VAL idris_queueGet(VM* vm, QueueHandle_t xQueue);
 #endif // HAS_FREERTOS
 

@@ -1193,7 +1193,7 @@ void idris_freeMsg(Msg* msg) {
 #endif // HAS_PTHREAD
 
 #ifdef HAS_FREERTOS
-void idris_queueSend(QueueHandle_t xQueue, VAL msg) {
+void idris_queuePut(QueueHandle_t xQueue, VAL msg) {
     BaseType_t dummy = xQueueSend(xQueue, (void*)&msg, portMAX_DELAY);
 }
 
