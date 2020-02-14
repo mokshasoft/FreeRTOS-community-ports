@@ -99,7 +99,7 @@ file(GLOB idris_rts_src
     ${IDRIS_RTS}/rts/idris_bitstring.c
     ${IDRIS_RTS}/rts/idris_utf8.c
     ${IDRIS_RTS}/rts/mini-gmp.c
-    ${IDRIS_RTS}/rts/bare-metal/idris_main.c
+    ${IDRIS_RTS}/rts/FreeRTOS/idris_main.c
 )
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
@@ -112,7 +112,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
     -Wno-unused-but-set-variable \
     -Wno-implicit-function-declaration \
     -Wno-int-conversion \
-    -DIDRIS_TARGET_OS=\"\\\"bare-metal\\\"\" \
+    -DIDRIS_TARGET_OS=\"\\\"FreeRTOS\\\"\" \
     -DIS_THREADED \
     -DHAS_FREERTOS \
     -DBARE_METAL"
