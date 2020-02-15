@@ -16,41 +16,44 @@ import Queue
  - Printer loop
  -}
 
-printerLoop : Int -> IO ()
-printerLoop 0 = do
+printer : Int -> IO ()
+printer 0 = do
     vDirectPrintMsg "Stopping printer thread\n"
     stopThread
-printerLoop n = do
+printer n = do
     vDirectPrintMsg "Printing from printer..\n"
     vTaskDelay 2000
-    printerLoop (n - 1)
-
-printer : Int -> IO ()
-printer nbr =
-    printerLoop nbr
+    printer (n - 1)
 
 {-
  - Receiver of items from Queue
  -}
 
-receiver : QueueHandle Int -> IO ()
-receiver handle = do
+receiver : Int -> QueueHandle Int -> IO ()
+receiver 0 handle = do
+    vDirectPrintMsg "Stopping receiver thread\n"
+    delete handle
+    stopThread
+receiver n handle = do
     val <- get handle
     vDirectPrintMsg $ "received: " ++ show val ++ "\n"
     vTaskDelay 1000
-    receiver handle
+    receiver (n - 1) handle
 
 {-
  - Sender of items to Queue
  -}
 
-sender : QueueHandle Int -> IO ()
-sender handle = do
+sender : Int -> QueueHandle Int -> IO ()
+sender 0 _ = do
+    vDirectPrintMsg "Stopping sender thread\n"
+    stopThread
+sender n handle = do
     let val = 123
     vDirectPrintMsg $ "sending " ++ show val ++ "\n"
     put handle val
     vTaskDelay 1000
-    sender handle
+    sender (n - 1) handle
 
 {-
  - Main program
@@ -66,9 +69,9 @@ main = do
     Just handle <- create Int 2 |
         Nothing => vDirectPrintMsg "Could not create queue\n"
     -- Start receiver
-    Just pidRec <- startThread (receiver handle) |
+    Just pidRec <- startThread (receiver 3 handle) |
         Nothing => vDirectPrintMsg "starting receiver failed\n"
     -- Start sender
-    Just pidSend <- startThread (sender handle) |
+    Just pidSend <- startThread (sender 3 handle) |
         Nothing => vDirectPrintMsg "starting sender failed\n"
     vDirectPrintMsg "sender and receiver started\n"

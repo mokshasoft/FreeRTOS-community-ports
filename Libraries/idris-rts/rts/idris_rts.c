@@ -161,6 +161,9 @@ Stats terminate(VM* vm) {
         vm->creator->processes--;
     }
 #endif
+#ifdef HAS_FREERTOS
+    free(vm);
+#endif
     // free(vm);
     // Set the VM as inactive, so that if any message gets sent to it
     // it will not get there, rather than crash the entire system.
