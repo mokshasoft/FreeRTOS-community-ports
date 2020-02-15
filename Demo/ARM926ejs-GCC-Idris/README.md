@@ -10,13 +10,15 @@ cmake -G Ninja -DCMAKE_TOOLCHAIN_FILE=../cmake/gcc-arm-toolchain.cmake ..
 
 ## Build and run on QEMU
 ```
-ninja -v qemu.demo-ARM926ejs-Idris```
+ninja -v qemu.demo-ARM926ejs-Idris
+```
 
 ## Debug in GDB and QEMU
 In terminal 1:
 ```
 ninja gdbserver.demo-ARM926ejs-Idris
 ```
+
 In terminal 2:
 ```
 ninja gdb.demo-ARM926ejs-Idris
