@@ -7,4 +7,5 @@ FreeRTOS was chosen as abstraction layer towards the hardware since it's easy to
 architectures, since it's small, and since there already are a lot of port available.
 
 ## How to run Idris on FreeRTOS
-See the instructions in the repository, [mokshasoft/FreeRTOS-community-ports](https://github.com/mokshasoft/FreeRTOS-community-ports).
+See the instructions in the repository,
+[mokshasoft/FreeRTOS-community-ports](https://github.com/mokshasoft/FreeRTOS-community-ports/tree/master/Demo/ARM926ejs-GCC-Idris).
