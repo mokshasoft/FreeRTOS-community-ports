@@ -1,19 +1,18 @@
-#ifndef BARE_METAL
-#include <assert.h>
-#else
+#ifdef BARE_METAL
 #include "idris_bare_metal.h"
+#include "ftoa.h"
+#else
+#include <assert.h>
+#include <stdio.h>  // snprintf
+#include "getline.h"
 #endif // BARE_METAL
 #include <errno.h>
 
 #include "itoa.h"
-#include "ftoa.h"
 #include "idris_rts.h"
 #include "idris_gc.h"
 #include "idris_utf8.h"
 #include "idris_bitstring.h"
-#ifndef BARE_METAL
-#include "getline.h"
-#endif // BARE_METAL
 
 #define STATIC_ASSERT(COND,MSG) typedef char static_assertion_##MSG[(COND)?1:-1]
 
@@ -528,14 +527,8 @@ void idris_memmove(void* dest, void* src, i_int dest_offset, i_int src_offset, i
 VAL idris_castIntStr(VM* vm, VAL i) {
     int x = (int) GETINT(i);
     String * cl = allocStr(vm, 16, 0);
-    if (sizeof(int) == sizeof(int32_t)) {
-        cl->slen = itoa_int32(cl->str, x);
-    } else if (sizeof(int) == sizeof(int64_t)) {
-        cl->slen = itoa_int64(cl->str, x);
-    } else {
-        assert(0); // Should not happen
-    }
-    cl->str[cl->slen] = '\n';
+    cl->slen = itoa_int64(cl->str, x);
+    cl->str[cl->slen] = '\0';
     return (VAL)cl;
 }
 
@@ -548,19 +541,19 @@ VAL idris_castBitsStr(VM* vm, VAL i) {
         // max length 16 bit unsigned int str 5 chars (65,535)
         cl = allocStr(vm, 6, 0);
         cl->slen = itoa_int32(cl->str, (uint16_t)GETBITS16(i));
-        cl->str[cl->slen] = '\n';
+        cl->str[cl->slen] = '\0';
         break;
     case CT_BITS32:
         // max length 32 bit unsigned int str 10 chars (4,294,967,295)
         cl = allocStr(vm, 11, 0);
         cl->slen = itoa_int32(cl->str, GETBITS32(i));
-        cl->str[cl->slen] = '\n';
+        cl->str[cl->slen] = '\0';
         break;
     case CT_BITS64:
         // max length 64 bit unsigned int str 20 chars (18,446,744,073,709,551,615)
         cl = allocStr(vm, 21, 0);
         cl->slen = itoa_int64(cl->str, GETBITS64(i));
-        cl->str[cl->slen] = '\n';
+        cl->str[cl->slen] = '\0';
         break;
     default:
         fprintf(stderr, "Fatal Error: ClosureType %d, not an integer type", ty);
@@ -580,8 +573,12 @@ VAL idris_castStrInt(VM* vm, VAL i) {
 
 VAL idris_castFloatStr(VM* vm, VAL i) {
     String * cl = allocStr(vm, 32, 0);
-    cl->slen = ftoa_prec_f0(cl->str, GETFLOAT(i));
-    cl->str[cl->slen] = '\n';
+#ifdef BARE_METAL
+    cl->slen = ftoa(cl->str, GETFLOAT(i));
+    cl->str[cl->slen] = '\0';
+#else
+    cl->slen = snprintf(cl->str, 32, "%.16g", GETFLOAT(i));
+#endif
     return (VAL)cl;
 }
 
