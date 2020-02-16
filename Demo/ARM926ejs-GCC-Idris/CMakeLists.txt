@@ -57,7 +57,8 @@ set(LINKER_SCRIPT ${APP_DIR}/qemu.ld)
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} \
     -Wl,-T,${LINKER_SCRIPT} \
     -Wl,--gc-sections \
-    -nostdlib"
+    -nostdlib \
+    -lgcc -L ${LIBGCC}"
 )
 
 # Files in project
