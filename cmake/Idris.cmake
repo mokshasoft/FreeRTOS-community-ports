@@ -33,7 +33,13 @@ function(idris_tc_files target idris_main other_files)
     # Add command
     add_custom_command(
         OUTPUT ${target}
-        COMMAND idris -i ${src_path} --codegen C --codegenonly -o ${CMAKE_CURRENT_BINARY_DIR}/${target} ${idris_main}
-        DEPENDS ${idris_main} ${dep_files}
+        COMMAND idris -i ${src_path} --codegen C --codegenonly -o ${target} ${idris_main}
+        DEPENDS ${dep_files}
+    )
+
+    add_custom_target(
+        transcompile-${target}
+        ALL
+        DEPENDS ${target}
     )
 endfunction()

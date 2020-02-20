@@ -8,9 +8,8 @@
 
 cmake_minimum_required(VERSION 3.7.2)
 
-# Include Idris CMake functions
-include(${CMAKE_SOURCE_DIR}/cmake/Idris.cmake)
-test_idris_version(1.3.1)
+# Include Idris app transcompilation
+add_subdirectory(Idris)
 
 set(APP demo-ARM926ejs-Idris)
 project(${APP} C)
@@ -42,15 +41,6 @@ set(FREERTOS_MEMMANG_DIR ${CMAKE_SOURCE_DIR}/Source/portable/MemMang)
 set(FREERTOS_PORT_DIR ${CMAKE_SOURCE_DIR}/Source/portable/GCC/ARM926EJ-S)
 set(DRIVERS_DIR ${CMAKE_SOURCE_DIR}/Source/portable/GCC/ARM926EJ-S/drivers)
 set(APP_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-
-# Idris Main
-file(GLOB idris_main
-    ${APP_DIR}/Idris/Main.idr
-)
-file(GLOB idris_all
-    ${APP_DIR}/Idris/*.idr
-)
-idris_tc_files(${APP}-main.c ${idris_main} ${idris_all})
 
 # Use custom linking
 set(LINKER_SCRIPT ${APP_DIR}/qemu.ld)
@@ -130,7 +120,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DIDRIS_TARGET_TRIPLE=\"\\\"${MACHINE}\\\"\"
 add_executable(${APP} EXCLUDE_FROM_ALL
     ${static}
     ${idris_rts_src}
-    ${CMAKE_CURRENT_BINARY_DIR}/${APP}-main.c
+    ${CMAKE_CURRENT_BINARY_DIR}/Idris/${APP}-main.c
 )
 generate_binary(${APP})
 create_qemu_target(versatilepb ${APP})
