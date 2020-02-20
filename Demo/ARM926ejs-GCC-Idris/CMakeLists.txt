@@ -18,6 +18,7 @@ project(${APP} C)
 set(CMAKE_C_FLAGS "\
     -c \
     -g \
+    -O1 \
     -mcpu=arm926ej-s \
     -nostdlib \
     -Wall -Wextra -Werror \
@@ -103,6 +104,7 @@ set(CMAKE_C_FLAGS_RTS "\
     -Wno-sign-compare \
     -Wno-unused-variable \
     -Wno-empty-body \
+    -Wno-maybe-uninitialized \
     -Wno-unused-but-set-variable \
     -DIDRIS_TARGET_OS=\"\\\"FreeRTOS\\\"\" \
     -DIDRIS_TARGET_TRIPLE=\"\\\"${MACHINE}\\\"\" \
