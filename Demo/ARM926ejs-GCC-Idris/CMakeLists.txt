@@ -21,8 +21,7 @@ set(CMAKE_C_FLAGS "\
     -mcpu=arm926ej-s \
     -nostdlib \
     -Wall -Wextra -Werror \
-    -fdata-sections -ffunction-sections \
-    -Wno-unused-label -Wno-unused-parameter -Wno-sign-compare -Wno-return-type"
+    -fdata-sections -ffunction-sections"
 )
 
 # Use FreeRTOS's malloc implementation
@@ -93,28 +92,39 @@ file(GLOB idris_rts_src
     ${IDRIS_RTS}/rts/FreeRTOS/idris_main.c
 )
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
-    -W -Wall \
-    -Wno-unused-parameter \
-    -Wno-sign-compare \
-    -Wno-unused-variable \
-    -Wno-empty-body \
-    -Wno-maybe-uninitialized \
-    -Wno-unused-but-set-variable \
-    -Wno-implicit-function-declaration \
-    -Wno-int-conversion \
-    -DIDRIS_TARGET_OS=\"\\\"FreeRTOS\\\"\" \
-    -DIS_THREADED \
-    -DHAS_FREERTOS \
-    -DBARE_METAL"
-)
-
 execute_process(
     COMMAND ${CMAKE_C_COMPILER} -dumpmachine
     OUTPUT_VARIABLE MACHINE
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DIDRIS_TARGET_TRIPLE=\"\\\"${MACHINE}\\\"\"")
+
+set(CMAKE_C_FLAGS_RTS "\
+    -Wno-unused-parameter \
+    -Wno-sign-compare \
+    -Wno-unused-variable \
+    -Wno-empty-body \
+    -Wno-unused-but-set-variable \
+    -DIDRIS_TARGET_OS=\"\\\"FreeRTOS\\\"\" \
+    -DIDRIS_TARGET_TRIPLE=\"\\\"${MACHINE}\\\"\" \
+    -DIS_THREADED \
+    -DHAS_FREERTOS \
+    -DBARE_METAL"
+)
+
+set_source_files_properties(${idris_rts_src} PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS_RTS})
+
+set(CMAKE_C_FLAGS_IDRIS_MAIN "\
+    -Wno-unused-label \
+    -Wno-unused-parameter \
+    -Wno-sign-compare \
+    -Wno-implicit-function-declaration \
+    -Wno-int-conversion"
+)
+
+set_source_files_properties(
+    ${CMAKE_CURRENT_BINARY_DIR}/Idris/${APP}-main.c
+    PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS_IDRIS_MAIN}
+)
 
 # Create target
 add_executable(${APP} EXCLUDE_FROM_ALL
