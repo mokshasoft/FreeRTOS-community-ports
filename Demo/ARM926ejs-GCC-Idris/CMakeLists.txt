@@ -18,7 +18,6 @@ project(${APP} C)
 set(CMAKE_C_FLAGS "\
     -c \
     -g \
-    -O1 \
     -mcpu=arm926ej-s \
     -nostdlib \
     -Wall -Wextra -Werror \
