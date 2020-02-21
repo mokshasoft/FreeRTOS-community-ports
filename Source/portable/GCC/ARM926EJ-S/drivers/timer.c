@@ -114,7 +114,7 @@ typedef struct _ARM926EJS_TIMER_REGS {
  */
 #define CAST_ADDR(ADDR)    (ARM926EJS_TIMER_REGS*) (ADDR),
 
-static volatile ARM926EJS_TIMER_REGS* const  pReg[BSP_NR_TIMERS] = {
+static volatile ARM926EJS_TIMER_REGS* const  pReg_timer[BSP_NR_TIMERS] = {
     BSP_TIMER_BASE_ADDRESSES(CAST_ADDR)
 };
 
@@ -157,7 +157,7 @@ void timer_init(uint8_t timerNr, uint8_t counterNr)
      * - counter length (32-bit)
      */
 
-    HWREG_SET_BITS(pReg[timerNr]->CNTR[counterNr].CONTROL, (CTL_MODE | CTL_CTRLEN));
+    HWREG_SET_BITS(pReg_timer[timerNr]->CNTR[counterNr].CONTROL, (CTL_MODE | CTL_CTRLEN));
 
     /*
      * The following bits are will be to 0:
@@ -167,7 +167,7 @@ void timer_init(uint8_t timerNr, uint8_t counterNr)
      * - oneshot bit (wrapping mode)
      */
 
-    HWREG_CLEAR_BITS(pReg[timerNr]->CNTR[counterNr].CONTROL,
+    HWREG_CLEAR_BITS(pReg_timer[timerNr]->CNTR[counterNr].CONTROL,
                      (CTL_ENABLE | CTL_INTR | CTL_PRESCALE_1 | CTL_PRESCALE_2 | CTL_ONESHOT));
 
     /* reserved bits remained unmodified */
@@ -191,7 +191,7 @@ void timer_start(uint8_t timerNr, uint8_t counterNr)
     }
 
     /* Set bit 7 of the Control Register to 1, do not modify other bits */
-    HWREG_SET_BITS(pReg[timerNr]->CNTR[counterNr].CONTROL, CTL_ENABLE);
+    HWREG_SET_BITS(pReg_timer[timerNr]->CNTR[counterNr].CONTROL, CTL_ENABLE);
 }
 
 
@@ -212,7 +212,7 @@ void timer_stop(uint8_t timerNr, uint8_t counterNr)
     }
 
     /* Set bit 7 of the Control Register to 0, do not modify other bits */
-    HWREG_CLEAR_BITS(pReg[timerNr]->CNTR[counterNr].CONTROL, CTL_ENABLE);
+    HWREG_CLEAR_BITS(pReg_timer[timerNr]->CNTR[counterNr].CONTROL, CTL_ENABLE);
 }
 
 
@@ -239,7 +239,7 @@ int8_t timer_isEnabled(uint8_t timerNr, uint8_t counterNr)
     }
 
     /* just check the enable bit of the timer's Control Register */
-    return (0 != HWREG_READ_BITS(pReg[timerNr]->CNTR[counterNr].CONTROL, CTL_ENABLE));
+    return (0 != HWREG_READ_BITS(pReg_timer[timerNr]->CNTR[counterNr].CONTROL, CTL_ENABLE));
 }
 
 
@@ -260,7 +260,7 @@ void timer_enableInterrupt(uint8_t timerNr, uint8_t counterNr)
     }
 
     /* Set bit 5 of the Control Register to 1, do not modify other bits */
-    HWREG_SET_BITS(pReg[timerNr]->CNTR[counterNr].CONTROL, CTL_INTR);
+    HWREG_SET_BITS(pReg_timer[timerNr]->CNTR[counterNr].CONTROL, CTL_INTR);
 }
 
 
@@ -281,7 +281,7 @@ void timer_disableInterrupt(uint8_t timerNr, uint8_t counterNr)
     }
 
     /* Set bit 5 of the Control Register to 0, do not modify other bits */
-    HWREG_CLEAR_BITS(pReg[timerNr]->CNTR[counterNr].CONTROL, CTL_INTR);
+    HWREG_CLEAR_BITS(pReg_timer[timerNr]->CNTR[counterNr].CONTROL, CTL_INTR);
 }
 
 
@@ -306,7 +306,7 @@ void timer_clearInterrupt(uint8_t timerNr, uint8_t counterNr)
      * Interrupt Clear Register clears the timer's interrupt output.
      * See page 3-6 of DDI0271.
      */
-    pReg[timerNr]->CNTR[counterNr].INTCLR = 0xFFFFFFFF;
+    pReg_timer[timerNr]->CNTR[counterNr].INTCLR = 0xFFFFFFFF;
 }
 
 
@@ -332,7 +332,7 @@ void timer_setLoad(uint8_t timerNr, uint8_t counterNr, uint32_t value)
         return;
     }
 
-    pReg[timerNr]->CNTR[counterNr].LOAD = value;
+    pReg_timer[timerNr]->CNTR[counterNr].LOAD = value;
 }
 
 
@@ -355,7 +355,7 @@ uint32_t timer_getValue(uint8_t timerNr, uint8_t counterNr)
         return 0UL;
     }
 
-    return pReg[timerNr]->CNTR[counterNr].VALUE;
+    return pReg_timer[timerNr]->CNTR[counterNr].VALUE;
 }
 
 
@@ -381,7 +381,7 @@ const volatile uint32_t* timer_getValueAddr(uint8_t timerNr, uint8_t counterNr)
         return NULL;
     }
 
-    return (const volatile uint32_t*) & (pReg[timerNr]->CNTR[counterNr].VALUE);
+    return (const volatile uint32_t*) & (pReg_timer[timerNr]->CNTR[counterNr].VALUE);
 }
 
 

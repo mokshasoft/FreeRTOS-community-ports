@@ -24,3 +24,17 @@ function(assert value msg)
         message(FATAL_ERROR "Assertion failure: " ${msg})
     endif()
 endfunction()
+
+function(concat_files target files)
+    # Get all the C files to concaternate
+    set(cat_files ${ARGV})
+    list(REMOVE_AT cat_files 0)
+    # Create a target that generates the concaternated file
+    add_custom_command(
+        OUTPUT ${target}
+        COMMAND cat ${cat_files} > ${target}
+        DEPENDS ${cat_files}
+        COMMENT "Concatenating C files"
+    )
+    add_custom_target(concat-${target} DEPENDS ${target})
+endfunction()

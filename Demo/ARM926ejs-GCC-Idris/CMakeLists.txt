@@ -67,13 +67,16 @@ file(GLOB static
     ${DRIVERS_DIR}/interrupt.c
     ${DRIVERS_DIR}/uart.c
     # App base
-    ${APP_DIR}/startup.s
     ${APP_DIR}/init.c
     ${APP_DIR}/print.c
     ${APP_DIR}/receive.c
     ${APP_DIR}/muslc_string.c
 )
 
+file(GLOB static_asm
+    # App base
+    ${APP_DIR}/startup.s
+)
 # Tell CMake to treat this file as a C-file
 set_property(SOURCE ${APP_DIR}/startup.s PROPERTY LANGUAGE C)
 
@@ -123,17 +126,14 @@ set(CMAKE_C_FLAGS_IDRIS_MAIN "\
     -Wno-int-conversion"
 )
 
-set_source_files_properties(
-    ${CMAKE_CURRENT_BINARY_DIR}/Idris/${APP}-main.c
-    PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS_IDRIS_MAIN}
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
+    ${CMAKE_C_FLAGS_RTS} \
+    ${CMAKE_C_FLAGS_IDRIS_MAIN}"
 )
+concat_files(${APP}-concat.c ${static} ${idris_rts_srt} ${CMAKE_CURRENT_BINARY_DIR}/Idris/${APP}-main.c)
 
 # Create target
-add_executable(${APP} EXCLUDE_FROM_ALL
-    ${static}
-    ${idris_rts_src}
-    ${CMAKE_CURRENT_BINARY_DIR}/Idris/${APP}-main.c
-)
+add_executable(${APP} EXCLUDE_FROM_ALL ${static_asm} ${APP}-concat.c)
 generate_binary(${APP})
 create_qemu_target(versatilepb ${APP})
 
@@ -141,6 +141,7 @@ create_qemu_target(versatilepb ${APP})
 target_include_directories(${APP} PUBLIC
     ${FREERTOS_DIR}/include
     ${FREERTOS_PORT_DIR}
+    ${DRIVERS_DIR}
     ${DRIVERS_DIR}/include
     ${APP_DIR}
     ${APP_DIR}/Idris
