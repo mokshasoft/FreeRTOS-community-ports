@@ -130,7 +130,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
     ${CMAKE_C_FLAGS_RTS} \
     ${CMAKE_C_FLAGS_IDRIS_MAIN}"
 )
-concat_files(${APP}-concat.c ${static} ${idris_rts_srt} ${CMAKE_CURRENT_BINARY_DIR}/Idris/${APP}-main.c)
+concat_files(${APP}-concat.c ${static} ${idris_rts_src} ${CMAKE_CURRENT_BINARY_DIR}/Idris/${APP}-main.c)
 
 # Create target
 add_executable(${APP} EXCLUDE_FROM_ALL ${static_asm} ${APP}-concat.c)
@@ -146,4 +146,5 @@ target_include_directories(${APP} PUBLIC
     ${APP_DIR}
     ${APP_DIR}/Idris
     ${IDRIS_RTS}/rts
+    ${IDRIS_RTS}/rts/FreeRTOS
 )

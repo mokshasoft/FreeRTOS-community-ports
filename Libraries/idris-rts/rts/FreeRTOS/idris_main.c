@@ -34,7 +34,7 @@
 #include <FreeRTOS.h>
 #include <task.h>
 
-void _idris__123_runMain_95_0_125_(VM* vm, VAL* oldbase);
+void* _idris__123_runMain_95_0_125_(VM* vm, VAL* oldbase);
 
 RTSOpts opts = {
     .init_heap_size = 10000,
