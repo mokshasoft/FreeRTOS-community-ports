@@ -95,7 +95,6 @@ typedef uint32_t TickType_t;
 
 #define portRESTORE_CONTEXT()                                           \
 {                                                                       \
-extern volatile void * volatile pxCurrentTCB;                           \
 extern volatile uint32_t ulCriticalNesting;                    \
                                                                         \
     /* Set the LR to the task stack. */                                 \
@@ -126,13 +125,11 @@ extern volatile uint32_t ulCriticalNesting;                    \
     "SUBS   PC, LR, #4                                          \n\t"   \
     );                                                                  \
     ( void ) ulCriticalNesting;                                         \
-    ( void ) pxCurrentTCB;                                              \
 }
 /*-----------------------------------------------------------*/
 
 #define portSAVE_CONTEXT()                                              \
 {                                                                       \
-extern volatile void * volatile pxCurrentTCB;                           \
 extern volatile uint32_t ulCriticalNesting;                    \
                                                                         \
     /* Push R0 as we are going to use the register. */                  \
@@ -173,7 +170,6 @@ extern volatile uint32_t ulCriticalNesting;                    \
     "STR    LR, [R0]                                            \n\t"   \
     );                                                                  \
     ( void ) ulCriticalNesting;                                         \
-    ( void ) pxCurrentTCB;                                              \
 }
 
 extern void vTaskSwitchContext(void);
