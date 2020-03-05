@@ -134,6 +134,10 @@ add_executable(${APP} EXCLUDE_FROM_ALL
     ${idris_rts_src}
     ${CMAKE_CURRENT_BINARY_DIR}/Idris/${APP}-main.c
 )
+set_source_files_properties(
+    ${CMAKE_CURRENT_BINARY_DIR}/Idris/${APP}-main.c
+    PROPERTIES GENERATED TRUE
+)
 generate_binary(${APP})
 create_qemu_target(versatilepb ${APP})
 
