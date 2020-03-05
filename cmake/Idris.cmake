@@ -32,9 +32,10 @@ function(idris_tc_files target idris_main other_files)
     get_filename_component(src_path ${idris_main} DIRECTORY)
     # Add command
     add_custom_command(
-        OUTPUT ${target}
-        COMMAND idris -i ${src_path} --codegen C --codegenonly -o ${target} ${idris_main}
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${target}
+        COMMAND idris -i ${src_path} --codegen C --codegenonly -o ${CMAKE_CURRENT_BINARY_DIR}/${target} ${idris_main}
         DEPENDS ${dep_files}
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 
     add_custom_target(

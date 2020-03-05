@@ -1,0 +1,8 @@
+package freertos
+
+opts = "--partial-eval --total"
+
+modules = FreeRTOS.Queue
+
+        , FreeRTOS.Task.Control
+        , FreeRTOS.Task.Utils

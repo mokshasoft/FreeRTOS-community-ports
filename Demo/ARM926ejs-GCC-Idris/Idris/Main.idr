@@ -8,9 +8,10 @@ See "LICENSE_BSD2.txt" for details.
 
 module Main
 
-import FreeRTOS
+import FreeRTOS.Queue
+import FreeRTOS.Task.Control as TC
+import FreeRTOS.Task.Utils
 import Utils
-import Queue
 
 {-
  - Printer loop
@@ -19,10 +20,10 @@ import Queue
 printer : Int -> IO ()
 printer 0 = do
     vDirectPrintMsg "Stopping printer thread\n"
-    stopThread
+    TC.delete
 printer n = do
     vDirectPrintMsg "Printing from printer..\n"
-    vTaskDelay 2000
+    delay 2000
     printer (n - 1)
 
 {-
@@ -33,11 +34,11 @@ receiver : Int -> QueueHandle Int -> IO ()
 receiver 0 handle = do
     vDirectPrintMsg "Stopping receiver thread\n"
     delete handle
-    stopThread
+    TC.delete
 receiver n handle = do
     val <- get handle
     vDirectPrintMsg $ "received: " ++ show val ++ "\n"
-    vTaskDelay 1000
+    delay 1000
     receiver (n - 1) handle
 
 {-
@@ -47,12 +48,12 @@ receiver n handle = do
 sender : Int -> QueueHandle Int -> IO ()
 sender 0 _ = do
     vDirectPrintMsg "Stopping sender thread\n"
-    stopThread
+    TC.delete
 sender n handle = do
     let val = 123
     vDirectPrintMsg $ "sending " ++ show val ++ "\n"
     put handle val
-    vTaskDelay 1000
+    delay 1000
     sender (n - 1) handle
 
 {-
@@ -63,15 +64,15 @@ main : IO ()
 main = do
     vDirectPrintMsg "Hello, Idris Unikernel\n"
     -- Start printer
-    Just pidPrinter <- startThread (printer 5) |
+    Just pidPrinter <- TC.create (printer 5) |
         Nothing => vDirectPrintMsg "starting printer failed\n"
     -- Create queue
     Just handle <- create Int 2 |
         Nothing => vDirectPrintMsg "Could not create queue\n"
     -- Start receiver
-    Just pidRec <- startThread (receiver 3 handle) |
+    Just pidRec <- TC.create (receiver 3 handle) |
         Nothing => vDirectPrintMsg "starting receiver failed\n"
     -- Start sender
-    Just pidSend <- startThread (sender 3 handle) |
+    Just pidSend <- TC.create (sender 3 handle) |
         Nothing => vDirectPrintMsg "starting sender failed\n"
     vDirectPrintMsg "sender and receiver started\n"

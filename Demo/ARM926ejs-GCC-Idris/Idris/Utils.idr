@@ -23,8 +23,3 @@ printInit uart_nr =
 vDirectPrintMsg : String -> IO ()
 vDirectPrintMsg msg =
     foreign FFI_C "vDirectPrintMsg" (String -> IO ()) msg
-
-||| Delay ms number of milliseconds
-vTaskDelay : Int -> IO ()
-vTaskDelay ms =
-    foreign FFI_C "wrapper_vTaskDelay" (Int -> IO ()) ms

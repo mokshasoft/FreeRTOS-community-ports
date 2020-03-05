@@ -22,6 +22,8 @@ file(GLOB idris_main
 )
 file(GLOB idris_src
     ${APP_DIR}/*.idr
+    ${APP_DIR}/FreeRTOS/*.idr
+    ${APP_DIR}/FreeRTOS/Task/*.idr
 )
 
 # Transcompile app
