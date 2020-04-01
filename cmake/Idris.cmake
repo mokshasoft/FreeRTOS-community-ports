@@ -8,10 +8,12 @@
 
 cmake_minimum_required(VERSION 3.7.2)
 
+set(IDRIS idris2)
+
 # Test that the Idris version is greater than version
 function(test_idris_version version)
     execute_process(
-        COMMAND idris --version
+        COMMAND ${IDRIS} --version
         OUTPUT_VARIABLE IDRIS_CMD_VERSION
     )
     string(
@@ -33,7 +35,7 @@ function(idris_tc_files target idris_main other_files)
     # Add command
     add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${target}
-        COMMAND idris -i ${src_path} --codegen C --codegenonly -o ${CMAKE_CURRENT_BINARY_DIR}/${target} ${idris_main}
+        COMMAND ${IDRIS} --codegen chicken -o ${CMAKE_CURRENT_BINARY_DIR}/${target} ${idris_main}
         DEPENDS ${dep_files}
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )

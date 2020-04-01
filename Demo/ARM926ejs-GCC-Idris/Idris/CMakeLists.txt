@@ -10,7 +10,6 @@ cmake_minimum_required(VERSION 3.7.2)
 
 # Include Idris CMake functions
 include(${CMAKE_SOURCE_DIR}/cmake/Idris.cmake)
-test_idris_version(1.3.1)
 
 set(APP demo-ARM926ejs-Idris)
 project(transcompile-${APP})
