@@ -10,28 +10,38 @@ module FreeRTOS.Queue
 
 %default total
 
-%include C "FreeRTOS/idris_FreeRTOS.h"
-%include C "idris_rts.h"
-
 ||| A handle to a queue
+||| Use an Int for Idris2 instead of Ptr
 export
 data QueueHandle : Type -> Type where
-    MkQueueHandle : (handle : Ptr) -> QueueHandle itemType
+    MkQueueHandle : (handle : Int) -> QueueHandle itemType
+
+%foreign "C:wrapper_xQueueCreate,libsmall"
+prim_wrapper_xQueueCreate : Int -> PrimIO Int
+
+wrapper_xQueueCreate: Int -> IO Int
+wrapper_xQueueCreate s = primIO $ prim_wrapper_xQueueCreate s
 
 ||| Create a queue.
 export
 create : (itemType : Type) -> Int -> IO (Maybe (QueueHandle itemType))
 create _ len = do
-    ptr <- foreign FFI_C "wrapper_xQueueCreate" (Int -> IO Ptr) len
-    if !(nullPtr ptr)
+    ptr <- wrapper_xQueueCreate len
+    if ptr == 0
         then pure Nothing
         else pure (Just (MkQueueHandle ptr))
+
+%foreign "C:wrapper_vQueueDelete,libsmall"
+prim_wrapper_vQueueDelete : Int -> PrimIO ()
+
+wrapper_vQueueDelete : Int -> IO ()
+wrapper_vQueueDelete p = primIO $ prim_wrapper_vQueueDelete p
 
 ||| Delete a queue.
 export
 delete : QueueHandle itemType -> IO ()
 delete (MkQueueHandle handle) =
-    foreign FFI_C "wrapper_vQueueDelete" (Ptr -> IO ()) handle
+    wrapper_vQueueDelete handle
 
 ||| Put an element at the end of the queue, block until not full.
 export

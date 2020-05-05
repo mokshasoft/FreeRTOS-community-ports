@@ -11,11 +11,11 @@ module Utils
 %default total
 
 ||| FFI wrapper for 'int16_t printInit(uint16_t uart_nr)'
-%foreign "C:printInit,libwrapper?"
-export
+%foreign "C:printInit,libsmall"
+prim_printInit : Int -> PrimIO Int
+
 printInit : Int -> IO Int
-printInit uart_nr =
-    foreign FFI_C "printInit" (Int -> IO Int) uart_nr
+printInit s = primIO $ prim_puts s
 
 ||| FFI wrapper for 'void vDirectPrintMsg(const portCHAR* msg)'
 export
