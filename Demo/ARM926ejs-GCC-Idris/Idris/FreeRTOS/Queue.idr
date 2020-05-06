@@ -48,14 +48,12 @@ delete (MkQueueHandle handle) =
 
 ||| Put an element at the end of the queue, block until not full.
 export
-put : QueueHandle itemType -> itemType -> IO ()
+put : {itemType : _} -> QueueHandle itemType -> itemType -> IO ()
 put {itemType} (MkQueueHandle handle) value =
-    foreign FFI_C "idris_queuePut" (Ptr -> Raw itemType -> IO ()) handle (MkRaw value)
+    cCall () "idris_queuePut" [handle, value]
 
 ||| Get an element from the front of the queue, block until an item is available.
 export
-get : QueueHandle itemType -> IO itemType
-get {itemType} (MkQueueHandle handle) = do
-    me <- getMyVM
-    MkRaw x <- foreign FFI_C "idris_queueGet" (Ptr -> Ptr -> IO (Raw itemType)) me handle
-    pure x
+get : {itemType : _} -> QueueHandle itemType -> IO itemType
+get {itemType} (MkQueueHandle handle) =
+    cCall itemType "idris_queueGet" [handle]
