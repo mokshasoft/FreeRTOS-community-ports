@@ -23,7 +23,7 @@ printer 0 = do
     TC.delete
 printer n = do
     vDirectPrintMsg "Printing from printer..\n"
-    delay 2000
+    TC.delay 2000
     printer (n - 1)
 
 {-
@@ -38,7 +38,7 @@ receiver 0 handle = do
 receiver n handle = do
     val <- get handle
     vDirectPrintMsg $ "received: " ++ show val ++ "\n"
-    delay 1000
+    TC.delay 1000
     receiver (n - 1) handle
 
 {-
@@ -53,7 +53,7 @@ sender n handle = do
     let val = 123
     vDirectPrintMsg $ "sending " ++ show val ++ "\n"
     put handle val
-    delay 1000
+    TC.delay 1000
     sender (n - 1) handle
 
 {-
