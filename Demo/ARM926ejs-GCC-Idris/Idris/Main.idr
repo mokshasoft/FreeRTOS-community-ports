@@ -64,15 +64,11 @@ main : IO ()
 main = do
     vDirectPrintMsg "Hello, Idris Unikernel\n"
     -- Start printer
-    Just pidPrinter <- TC.create (printer 5) |
-        Nothing => vDirectPrintMsg "starting printer failed\n"
+    Just pidPrinter <- TC.create (printer 5) | Nothing => vDirectPrintMsg "starting printer failed\n"
     -- Create queue
-    Just handle <- create Int 2 |
-        Nothing => vDirectPrintMsg "Could not create queue\n"
+    Just handle <- create Int 2 | Nothing => vDirectPrintMsg "Could not create queue\n"
     -- Start receiver
-    Just pidRec <- TC.create (receiver 3 handle) |
-        Nothing => vDirectPrintMsg "starting receiver failed\n"
+    Just pidRec <- TC.create (receiver 3 handle) | Nothing => vDirectPrintMsg "starting receiver failed\n"
     -- Start sender
-    Just pidSend <- TC.create (sender 3 handle) |
-        Nothing => vDirectPrintMsg "starting sender failed\n"
+    Just pidSend <- TC.create (sender 3 handle) | Nothing => vDirectPrintMsg "starting sender failed\n"
     vDirectPrintMsg "sender and receiver started\n"
