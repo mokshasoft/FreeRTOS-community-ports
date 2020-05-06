@@ -15,10 +15,10 @@ module Utils
 prim_printInit : Int -> PrimIO Int
 
 printInit : Int -> IO Int
-printInit s = primIO $ prim_puts s
+printInit s = primIO $ prim_printInit s
 
 ||| FFI wrapper for 'void vDirectPrintMsg(const portCHAR* msg)'
 export
 vDirectPrintMsg : String -> IO ()
 vDirectPrintMsg msg =
-    foreign FFI_C "vDirectPrintMsg" (String -> IO ()) msg
+    cCall () "vDirectPrintMsg" [msg]
