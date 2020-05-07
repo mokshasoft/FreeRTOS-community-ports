@@ -8,6 +8,8 @@
 
 cmake_minimum_required(VERSION 3.7.2)
 
+include(libwrapperFreeRTOS.cmake)
+
 # Include Idris CMake functions
 include(${CMAKE_SOURCE_DIR}/cmake/Idris.cmake)
 
