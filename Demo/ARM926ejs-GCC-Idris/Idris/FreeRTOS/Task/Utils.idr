@@ -4,12 +4,6 @@ import FreeRTOS.Task.Control
 
 %default total
 
-||| The handle of the currently running (calling) task.
-getCurrentTaskTID : IO TID
-getCurrentTaskTID = do
-    ptr <- cCall AnyPtr "xTaskGetCurrentTaskHandle" []
-    pure (MkTID ptr)
-
 ||| The task handle associated with the Idle task.
 getIdleTaskHandle : IO TID
 getIdleTaskHandle = do

@@ -11,8 +11,11 @@ data TID : Type where
 %foreign "C:isNull,libsmall"
 nullPtr : AnyPtr -> Bool
 
-%foreign "C:getMyHandle,libsmall"
-getMyHandle : AnyPtr
+||| The handle of the currently running (calling) task.
+getCurrentTaskTID : IO TID
+getCurrentTaskTID = do
+    ptr <- cCall AnyPtr "xTaskGetCurrentTaskHandle" []
+    pure (MkTID ptr)
 
 ||| Create a new task and add it to the list of tasks that are ready to run.
 ||| Returns `Nothing` if required memory couldn't be allocated.
@@ -29,7 +32,7 @@ create func = do
 export
 delete : IO ()
 delete = do
-    let handle = getMyHandle
+    MkTID handle <- getCurrentTaskTID
     cCall () "vTaskDelete" [handle]
 
 ||| Delay the task `ms` number of milliseconds.
