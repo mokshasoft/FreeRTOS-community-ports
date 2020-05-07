@@ -8,6 +8,8 @@
 
 cmake_minimum_required(VERSION 3.7.2)
 
+include(libfreertos.cmake)
+
 # Include Idris app transcompilation
 add_subdirectory(Idris)
 
