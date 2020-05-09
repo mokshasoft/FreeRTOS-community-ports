@@ -8,6 +8,8 @@ See "LICENSE_BSD2.txt" for details.
 
 module FreeRTOS.Queue
 
+import Utils
+
 %default total
 
 ||| A handle to a queue
@@ -22,15 +24,12 @@ prim_wrapper_xQueueCreate : Int -> PrimIO AnyPtr
 wrapper_xQueueCreate: Int -> IO AnyPtr
 wrapper_xQueueCreate s = primIO $ prim_wrapper_xQueueCreate s
 
-%foreign "C:isNull,libsmall"
-nullPtr : AnyPtr -> Bool
-
 ||| Create a queue.
 export
 create : (itemType : Type) -> Int -> IO (Maybe (QueueHandle itemType))
 create _ len = do
     ptr <- wrapper_xQueueCreate len
-    if nullPtr ptr
+    if !(nullPtr ptr)
         then pure Nothing
         else pure (Just (MkQueueHandle ptr))
 

@@ -22,3 +22,9 @@ export
 vDirectPrintMsg : String -> IO ()
 vDirectPrintMsg msg =
     cCall () "vDirectPrintMsg" [msg]
+
+export
+nullPtr : AnyPtr -> IO Bool
+nullPtr ptr = do
+    v <- cCall Int "isNull" [ptr]
+    pure $ v /= 0

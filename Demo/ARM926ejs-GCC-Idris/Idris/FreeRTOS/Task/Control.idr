@@ -1,15 +1,13 @@
 module FreeRTOS.Task.Control
 
+import Utils
+
 %default total
 
 ||| An identifier of a Task
 public export
 data TID : Type where
      MkTID : (tid : AnyPtr) -> TID
-
--- TODO Fix C part of these
-%foreign "C:isNull,libsmall"
-nullPtr : AnyPtr -> Bool
 
 ||| The handle of the currently running (calling) task.
 getCurrentTaskTID : IO TID
@@ -24,7 +22,7 @@ create : (function : IO ()) -> IO (Maybe TID)
 create func = do
     let etc = 0 -- TODO: pass the rest of the arguments to xTaskCreate
     ptr <- cCall AnyPtr "xTaskCreate" [func, etc]
-    if nullPtr ptr
+    if !(nullPtr ptr)
         then pure Nothing
         else pure (Just (MkTID ptr))
 
