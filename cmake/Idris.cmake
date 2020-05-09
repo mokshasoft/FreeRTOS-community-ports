@@ -35,7 +35,7 @@ function(idris_tc_files target idris_main other_files)
     # Add command
     add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${target}
-        COMMAND ${IDRIS} --codegen racket -o ${CMAKE_CURRENT_BINARY_DIR}/${target} ${idris_main}
+        COMMAND ${IDRIS} --codegen chez -o ${CMAKE_CURRENT_BINARY_DIR}/${target} ${idris_main}
         DEPENDS ${dep_files}
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
