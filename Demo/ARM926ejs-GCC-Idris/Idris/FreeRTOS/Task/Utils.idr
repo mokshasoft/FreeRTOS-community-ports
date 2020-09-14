@@ -4,18 +4,26 @@ import FreeRTOS.Task.Control
 
 %default total
 
+%foreign "C:xTaskGetIdleTaskHandle,libwrapperFreeRTOS"
+prim_xTaskGetIdleTaskHandle : PrimIO TID
+
 ||| The task handle associated with the Idle task.
 getIdleTaskHandle : IO TID
-getIdleTaskHandle = do
-    ptr <- cCall AnyPtr "xTaskGetIdleTaskHandle" []
-    pure (MkTID ptr)
+getIdleTaskHandle =
+    primIO $ prim_xTaskGetIdleTaskHandle
+
+%foreign "C:pcTaskGetName,libwrapperFreeRTOS"
+prim_pcTaskGetName : TID -> PrimIO String
 
 ||| Looks up the name of a task from the task’s handle.
 getName : TID -> IO String
 getName (MkTID ptr) =
-    cCall String "pcTaskGetName" [ptr]
+    primIO $ prim_pcTaskGetName (MkTID ptr)
+
+%foreign "C:uxTaskGetNumberOfTasks,libwrapperFreeRTOS"
+prim_uxTaskGetNumberOfTasks : PrimIO Int
 
 ||| The number of tasks that the RTOS kernel is currently managing.
 getNbrTasks : IO Int
 getNbrTasks =
-    cCall Int "uxTaskGetNumberOfTasks" []
+    primIO $ prim_uxTaskGetNumberOfTasks

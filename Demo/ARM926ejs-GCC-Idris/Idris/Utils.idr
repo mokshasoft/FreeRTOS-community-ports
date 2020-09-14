@@ -11,20 +11,28 @@ module Utils
 %default total
 
 ||| FFI wrapper for 'int16_t printInit(uint16_t uart_nr)'
-%foreign "C:printInit,libsmall"
+%foreign "C:printInit,libwrapperFreeRTOS"
 prim_printInit : Int -> PrimIO Int
 
+export
 printInit : Int -> IO Int
-printInit s = primIO $ prim_printInit s
+printInit s =
+  primIO $ prim_printInit s
 
 ||| FFI wrapper for 'void vDirectPrintMsg(const portCHAR* msg)'
+%foreign "C:vDirectPrintMsg,libwrapperFreeRTOS"
+prim_vDirectPrintMsg : String -> PrimIO ()
+
 export
 vDirectPrintMsg : String -> IO ()
 vDirectPrintMsg msg =
-    cCall () "vDirectPrintMsg" [msg]
+  primIO $ prim_vDirectPrintMsg msg
+
+%foreign "C:isNull,libwrapperFreeRTOS"
+prim_isNull : AnyPtr -> PrimIO Int
 
 export
 nullPtr : AnyPtr -> IO Bool
 nullPtr ptr = do
-    v <- cCall Int "isNull" [ptr]
-    pure $ v /= 0
+  v <- primIO $ prim_isNull ptr
+  pure (v == 0)

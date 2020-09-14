@@ -34,3 +34,7 @@ void wrapper_vTaskDelay(int delay_ms);
  * Wrappers for FreeRTOS Queue
  */
 QueueHandle_t wrapper_xQueueCreate(UBaseType_t uxQueueLength);
+
+void idris_queuePut(QueueHandle_t xQueue, VAL msg);
+VAL idris_queueGet(VM* vm, QueueHandle_t xQueue);
+
