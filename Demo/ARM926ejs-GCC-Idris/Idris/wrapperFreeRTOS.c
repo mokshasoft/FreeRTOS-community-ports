@@ -35,11 +35,11 @@ QueueHandle_t wrapper_xQueueCreate(UBaseType_t uxQueueLength)
 }
 
 void idris_queuePut(QueueHandle_t xQueue, void* msg) {
-    BaseType_t dummy = xQueueSend(xQueue, msg, portMAX_DELAY);
+    xQueueSend(xQueue, msg, portMAX_DELAY);
 }
 
-VAL idris_queueGet(VM* vm, QueueHandle_t xQueue) {
-    VAL msg = NULL;
-    BaseType_t dummy = xQueueReceive(xQueue, (void*)&msg, portMAX_DELAY);
-    return doCopyTo(vm, msg);
+void* idris_queueGet(QueueHandle_t xQueue) {
+    void* msg = NULL;
+    xQueueReceive(xQueue, msg, portMAX_DELAY);
+    return msg;
 }

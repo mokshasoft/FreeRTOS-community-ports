@@ -35,6 +35,6 @@ void wrapper_vTaskDelay(int delay_ms);
  */
 QueueHandle_t wrapper_xQueueCreate(UBaseType_t uxQueueLength);
 
-void idris_queuePut(QueueHandle_t xQueue, VAL msg);
-VAL idris_queueGet(VM* vm, QueueHandle_t xQueue);
+void idris_queuePut(QueueHandle_t xQueue, void* msg);
+void* idris_queueGet(QueueHandle_t xQueue);
 
