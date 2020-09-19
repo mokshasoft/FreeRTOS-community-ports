@@ -79,44 +79,6 @@ file(GLOB static
 # Tell CMake to treat this file as a C-file
 set_property(SOURCE ${APP_DIR}/startup.s PROPERTY LANGUAGE C)
 
-# Idris RTS
-set(IDRIS_RTS ${CMAKE_SOURCE_DIR}/Libraries/idris-rts)
-file(GLOB idris_rts_src
-    ${IDRIS_RTS}/rts/idris_rts.c
-    ${IDRIS_RTS}/rts/idris_heap.c
-    ${IDRIS_RTS}/rts/idris_gc.c
-    ${IDRIS_RTS}/rts/idris_gmp.c
-    ${IDRIS_RTS}/rts/idris_bitstring.c
-    ${IDRIS_RTS}/rts/idris_utf8.c
-    ${IDRIS_RTS}/rts/mini-gmp.c
-    ${IDRIS_RTS}/rts/itoa.c
-    ${IDRIS_RTS}/rts/ftoa.c
-    ${IDRIS_RTS}/rts/FreeRTOS/idris_FreeRTOS.c
-    ${IDRIS_RTS}/rts/FreeRTOS/idris_main.c
-)
-
-execute_process(
-    COMMAND ${CMAKE_C_COMPILER} -dumpmachine
-    OUTPUT_VARIABLE MACHINE
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-
-set(CMAKE_C_FLAGS_RTS "\
-    -Wno-unused-parameter \
-    -Wno-sign-compare \
-    -Wno-unused-variable \
-    -Wno-empty-body \
-    -Wno-maybe-uninitialized \
-    -Wno-unused-but-set-variable \
-    -DIDRIS_TARGET_OS=\"\\\"FreeRTOS\\\"\" \
-    -DIDRIS_TARGET_TRIPLE=\"\\\"${MACHINE}\\\"\" \
-    -DIS_THREADED \
-    -DHAS_FREERTOS \
-    -DBARE_METAL"
-)
-
-set_source_files_properties(${idris_rts_src} PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS_RTS})
-
 set(CMAKE_C_FLAGS_IDRIS_MAIN "\
     -Wno-unused-label \
     -Wno-unused-parameter \
@@ -150,5 +112,4 @@ target_include_directories(${APP} PUBLIC
     ${DRIVERS_DIR}/include
     ${APP_DIR}
     ${APP_DIR}/Idris
-    ${IDRIS_RTS}/rts
 )
