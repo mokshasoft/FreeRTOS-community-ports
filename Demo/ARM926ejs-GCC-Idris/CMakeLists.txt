@@ -8,13 +8,13 @@
 
 cmake_minimum_required(VERSION 3.7.2)
 
+set(APP demo-ARM926ejs-Idris)
+project(${APP} C)
+
 include(libfreertos.cmake)
 
 # Include Idris app transcompilation
 add_subdirectory(Idris)
-
-set(APP demo-ARM926ejs-Idris)
-project(${APP} C)
 
 # GCC flags
 set(CMAKE_C_FLAGS "\
