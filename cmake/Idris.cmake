@@ -32,13 +32,10 @@ function(idris_tc_files target idris_main other_files)
     list(REMOVE_AT dep_files 0 1)
     # Get the source paths (actually only from main)
     get_filename_component(src_path ${idris_main} DIRECTORY)
-    set(GAMBIT_GSC_BACKEND CMAKE_C_COMPILER)
-    set(GAMBIT_GSC "/home/l337/OpenSource/Idris/gambit/gsc/gsc") 
-    set(IDRIS2_LIBS ${CMAKE_CURRENT_BINARY_DIR})
     # Add command
     add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${target}
-        COMMAND ${IDRIS} --codegen gambit -o ${CMAKE_CURRENT_BINARY_DIR}/${target} ${idris_main}
+        COMMAND IDRIS2_LIBS=/home/l337/Repository/MokshasoftGithub/FreeRTOS-community-ports/idris2_build/Demo/ARM926ejs-GCC-Idris:/home/l337/Repository/MokshasoftGithub/FreeRTOS-community-ports/idris2_build/Demo/ARM926ejs-GCC-Idris/Idris ${IDRIS} --codegen gambit -o ${CMAKE_CURRENT_BINARY_DIR}/${target} ${idris_main}
         DEPENDS ${dep_files}
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
