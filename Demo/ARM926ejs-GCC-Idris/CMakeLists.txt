@@ -75,6 +75,7 @@ file(GLOB static
     ${APP_DIR}/print.c
     ${APP_DIR}/receive.c
     ${APP_DIR}/muslc_string.c
+    ${APP_DIR}/main.c
 )
 
 # Tell CMake to treat this file as a C-file
