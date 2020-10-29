@@ -24,6 +24,7 @@ set(CMAKE_C_FLAGS "\
     -mcpu=arm926ej-s \
     -nostdlib \
     -Wall -Wextra -Werror \
+    -Wno-implicit-function-declaration -Wno-unused-variable \
     -fdata-sections -ffunction-sections"
 )
 
