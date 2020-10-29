@@ -19,6 +19,7 @@ add_subdirectory(Idris)
 # GCC flags
 set(CMAKE_C_FLAGS "\
     -c \
+    -I/usr/include \
     -g \
     -O1 \
     -mcpu=arm926ej-s \
