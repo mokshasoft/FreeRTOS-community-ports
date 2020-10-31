@@ -35,7 +35,7 @@ function(idris_tc_files target idris_main other_files)
     # Add command
     add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${target}
-	COMMAND IDRIS2_LIBS=/home/l337/Repository/MokshasoftGithub/FreeRTOS-community-ports/idris2_build/Demo/ARM926ejs-GCC-Idris:/home/l337/Repository/MokshasoftGithub/FreeRTOS-community-ports/idris2_build/Demo/ARM926ejs-GCC-Idris/Idris ${IDRIS} --codegen gambit --directive C -o ${CMAKE_CURRENT_BINARY_DIR}/${target} ${idris_main}
+	COMMAND IDRIS2_LIBS=${CMAKE_BINARY_DIR}/Demo/ARM926ejs-GCC-Idris:${CMAKE_BINARY_DIR}/Demo/ARM926ejs-GCC-Idris/Idris ${IDRIS} --codegen gambit --directive C -o ${CMAKE_CURRENT_BINARY_DIR}/${target} ${idris_main}
         DEPENDS ${dep_files}
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
