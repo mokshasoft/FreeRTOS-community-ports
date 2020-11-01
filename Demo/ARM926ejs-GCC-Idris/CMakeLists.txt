@@ -55,20 +55,7 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} \
 )
 
 # Files in project
-file(GLOB static
-    # FreeRTOS base
-    ${FREERTOS_DIR}/queue.c
-    ${FREERTOS_DIR}/list.c
-    ${FREERTOS_DIR}/tasks.c
-    # FreeRTOS heap
-    ${FREERTOS_MEMMANG_DIR}/heap_4.c
-    # FreeRTOS port
-    ${FREERTOS_PORT_DIR}/port.c
-    ${FREERTOS_PORT_DIR}/portISR.c
-    # Versatilepb drivers
-    ${DRIVERS_DIR}/timer.c
-    ${DRIVERS_DIR}/interrupt.c
-    ${DRIVERS_DIR}/uart.c
+file(GLOB src_app
     # App base
     ${APP_DIR}/startup.s
     ${APP_DIR}/init.c
@@ -89,29 +76,18 @@ set(CMAKE_C_FLAGS_IDRIS_MAIN "\
     -Wno-int-conversion"
 )
 
-set_source_files_properties(
-    ${CMAKE_CURRENT_BINARY_DIR}/Idris/${APP}-main.c
-    PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS_IDRIS_MAIN}
+# Create target
+add_library(FreeRTOSApp STATIC EXCLUDE_FROM_ALL
+    ${src_app}
 )
 
-# Create target
-add_executable(${APP} EXCLUDE_FROM_ALL
-    ${static}
-    ${idris_rts_src}
-    ${CMAKE_CURRENT_BINARY_DIR}/Idris/${APP}-main.c
-)
-set_source_files_properties(
-    ${CMAKE_CURRENT_BINARY_DIR}/Idris/${APP}-main.c
-    PROPERTIES GENERATED TRUE
-)
-generate_binary(${APP})
-create_qemu_target(versatilepb ${APP})
+#generate_binary(${APP})
+#create_qemu_target(versatilepb ${APP})
 
 # Header files
-target_include_directories(${APP} PUBLIC
+target_include_directories(FreeRTOSApp PUBLIC
     ${FREERTOS_DIR}/include
     ${FREERTOS_PORT_DIR}
     ${DRIVERS_DIR}/include
     ${APP_DIR}
-    ${APP_DIR}/Idris
 )
